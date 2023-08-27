@@ -1942,10 +1942,9 @@ public class ExBlocks {
             ammo(
                     ExItems.fullBattery, new BasicBulletType() {
                         {
-                            width = 14.4f;
-                            height = 14.4f;
+                            width = 14.5f;
+                            height = 14.5f;
 
-                            damage = 843f;
                             speed = 0.8f;
                             lifetime = 3000f;
                             ammoMultiplier = 1;
@@ -1996,6 +1995,15 @@ public class ExBlocks {
                                     }};
                                 }};
                             }};
+
+                            damage = 850f;
+
+                            splashDamageRadius = 38f;
+                            splashDamage = 705f;
+
+                            homingDelay = 1f;
+                            homingRange = 6000f;
+                            homingPower = 0.081f;
                         }
 
                         @Override
