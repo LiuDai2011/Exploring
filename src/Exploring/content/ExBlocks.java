@@ -1942,8 +1942,8 @@ public class ExBlocks {
             ammo(
                     ExItems.fullBattery, new BasicBulletType() {
                         {
-                            width = 7.2f;
-                            height = 7.2f;
+                            width = 14.4f;
+                            height = 14.4f;
 
                             damage = 843f;
                             speed = 0.8f;
@@ -1955,7 +1955,7 @@ public class ExBlocks {
                             intervalBullets = 60;
                             intervalBullet = new LightningBulletType() {{
                                 damage = 150;
-                                lightningLength = 15;
+                                lightningLength = 8;
                                 collidesAir = false;
                                 ammoMultiplier = 1f;
 
@@ -2003,8 +2003,8 @@ public class ExBlocks {
                             Color c = Color.valueOf("cff2ff");
 
                             Draw.color(c);
-                            Fill.circle(b.x, b.y, 3.7f);
-                            Fill.light(b.x, b.y, 50, 4.1f, 0, c, c);
+                            Fill.circle(b.x, b.y, 7.4f);
+                            Fill.light(b.x, b.y, 50, 8.3f, 0, c, c);
                         }
                     }
             );
