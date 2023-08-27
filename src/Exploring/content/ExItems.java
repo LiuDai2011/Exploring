@@ -38,6 +38,7 @@ public class ExItems {
         }};
         fullBattery = new Item("full-battery", Color.valueOf("ffee9e")){{
             cost = 1f;
+            charge = 5f;
         }};
     }
 }
