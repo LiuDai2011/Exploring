@@ -1,20 +1,20 @@
 #the mod name as displayed in-game
-displayName: "Java Mod Template"
+displayName: "Exploring"
 
-#the internal name of your mod
-name: "example-java-mod"
+#the internal name of mod
+name: "exploring"
 
-#your name
-author: "You"
+#name
+author: "[#ceeaf4]LiuDai"
 
 #the fully qualified main class of the mod
-main: "example.ExampleJavaMod"
+main: "Exploring.ExploringMain"
 
 #the mod description as seen in the mod dialog
-description: "A Mindustry Java mod template."
+description: "My first MindustryJava mod\n\nThanks for:\n    [#6ecdec]Cryofluid[white]"
 
 #the mod version
-version: 1.0
+version: 0.2.6-alpha
 
 #the minimum game build required to run this mod
 minGameVersion: 145
