@@ -15,8 +15,11 @@ import Exploring.world.blocks.turrets.*;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Fill;
+import arc.math.Angles;
+import arc.math.Mathf;
 import arc.struct.EnumSet;
 import arc.util.Log;
+import arc.util.Time;
 import mindustry.content.*;
 import mindustry.entities.UnitSorts;
 import mindustry.entities.bullet.*;
@@ -27,7 +30,7 @@ import mindustry.entities.pattern.ShootBarrel;
 import mindustry.entities.pattern.ShootSpread;
 import mindustry.gen.Bullet;
 import mindustry.gen.Sounds;
-import mindustry.graphics.CacheLayer;
+import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
 import mindustry.type.Category;
@@ -43,6 +46,7 @@ import mindustry.world.draw.*;
 import mindustry.world.meta.*;
 
 import static mindustry.type.ItemStack.with;
+
 //hou ec80fe9aad          qian 93fde537c7
 public class ExBlocks {
     public static Block
@@ -75,7 +79,7 @@ public class ExBlocks {
 
     test_pt, exDuo, exScatter, exScorch, exHail, exArc, exWave, exLancer, exSwarmer, exSalvo, exFuse, exRipple, exCyclone, exForeshadow, exSpectre, exMeltdown, exSegment, exParallax, exTsunami,
 
-    eternity, ballLightning,
+    eternity, ballLightning, ion,
 
     anuken, nianNianYouYu, guiY, RA2, No9527, lyr, oneGamma, zzcQAQ, paoTaiS, AarnMAX, RHN, chiRe, jianBian, boLuo, LiuDai;
 
@@ -98,7 +102,7 @@ public class ExBlocks {
         Log.info("Loading env...");
 
 
-        liquidHelium = new Floor("liquid-helium"){{
+        liquidHelium = new Floor("liquid-helium") {{
             speedMultiplier = 0.2f;
             variants = 0;
             liquidDrop = ExLiquids.liquidHelium;
@@ -2033,6 +2037,8 @@ public class ExBlocks {
                             Draw.color(c);
                             Fill.circle(b.x, b.y, 7.4f);
                             Fill.light(b.x, b.y, 50, 8.3f, 0, c, c);
+
+                            Draw.reset();
                         }
                     }
             );
@@ -2057,6 +2063,90 @@ public class ExBlocks {
             coolant = consumeCoolant(0.8f);
             consumePower(9f);
         }};
+
+        ion = new ExItemTurret("ion") {
+            {
+                requirements(Category.turret, with(Items.copper, 1));
+
+                ammo(
+                        ExItems.fullBattery, new BasicBulletType() {
+                            {
+                                pierce = true;
+                                damage = 50f;
+                                speed = 23f;
+                                width = 0.15f;
+                                height = 16f;
+                                lifetime = 1000f;
+                                ammoMultiplier = 1000;
+                            }
+
+                            @Override
+                            public void draw(Bullet b) {
+                                Draw.color();
+
+                                float
+                                        x1 = b.x - 8f * Mathf.sinDeg(b.rotation()),
+                                        y1 = b.y - 8f * Mathf.sinDeg(b.rotation()),
+                                        x2 = b.x + 8f * Mathf.sinDeg(b.rotation()),
+                                        y2 = b.y + 8f * Mathf.sinDeg(b.rotation());
+
+                                Drawf.line(Color.valueOf("ceeaf4"), x1, y1, x2, y2);
+
+                                Draw.reset();
+                            }
+                        }
+                );
+
+                range = 254f;
+
+                maxAmmo = 4000;
+                ammoPerShot = 5;
+                rotateSpeed = 15f;
+                reload = 1f;
+                ammoUseEffect = Fx.casing3Double;
+                recoil = 2.5f;
+                shake = 24f;
+                size = 2;
+                shootCone = 1f;
+                shootY = 16f + 5.1f;
+                envEnabled |= Env.space;
+
+                coolantMultiplier = 0.4f;
+                scaledHealth = 59f;
+
+                coolant = consumeCoolant(0.8f);
+                consumePower(1f);
+            }
+
+            public class ExItemTurretBuild extends ItemTurretBuild {
+                @Override
+                protected void shoot(BulletType type) {
+                    float X = Mathf.random(-5f, 5f);
+
+                    float
+                            bulletX = x + Angles.trnsx(rotation - 90, X, shootY),
+                            bulletY = y + Angles.trnsy(rotation - 90, X, shootY);
+
+                    if(shoot.firstShotDelay > 0){
+                        chargeSound.at(bulletX, bulletY, Mathf.random(soundPitchMin, soundPitchMax));
+                        type.chargeEffect.at(bulletX, bulletY, rotation);
+                    }
+
+                    shoot.shoot(barrelCounter, (xOffset, yOffset, angle, delay, mover) -> {
+                        queuedBullets++;
+                        if(delay > 0f){
+                            Time.run(delay, () -> bullet(type, xOffset, yOffset, angle, mover));
+                        }else{
+                            bullet(type, xOffset, yOffset, angle, mover);
+                        }
+                    }, () -> barrelCounter++);
+
+                    if(consumeAmmoOnce){
+                        useAmmo();
+                    }
+                }
+            }
+        };
     }
 
     public static void loadDrill() {
