@@ -1,6 +1,8 @@
 package Exploring;
 
 import Exploring.content.*;
+import Exploring.graphics.ExCacheLayer;
+import Exploring.graphics.ExShaders;
 import Exploring.io.AboutModDialog;
 import arc.util.Log;
 import mindustry.mod.Mod;
@@ -17,6 +19,9 @@ public class ExploringMain extends Mod {
     @Override
     public void loadContent() {
         Log.info("Loading Exploring content.");
+
+        ExShaders.init();
+        ExCacheLayer.init();
 
         ExStatusEffects.load();
         ExLiquids.load();

@@ -6,7 +6,9 @@ import mindustry.type.Item;
 
 public class ExItems {
     public static Item
-            titaniumAlloy, siliconBlock, iron, vacuumTube, pureSilicon, chip, quantumChip, battery, fullBattery;
+            titaniumAlloy, siliconBlock, iron, vacuumTube, pureSilicon, chip, quantumChip, battery, fullBattery,
+
+            stone;
 
     public static void load() {
         Items.silicon.hardness = 3;

@@ -1,5 +1,6 @@
 package Exploring.content;
 
+import Exploring.graphics.ExCacheLayer;
 import Exploring.world.blocks.*;
 import Exploring.world.blocks.distribution.*;
 import Exploring.world.blocks.drills.ExAttributeCrafter;
@@ -26,12 +27,14 @@ import mindustry.entities.pattern.ShootBarrel;
 import mindustry.entities.pattern.ShootSpread;
 import mindustry.gen.Bullet;
 import mindustry.gen.Sounds;
+import mindustry.graphics.CacheLayer;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
 import mindustry.type.Category;
 import mindustry.type.ItemStack;
 import mindustry.type.LiquidStack;
 import mindustry.world.Block;
+import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.OreBlock;
 import mindustry.world.consumers.ConsumeItemExplode;
 import mindustry.world.consumers.ConsumeItemFlammable;
@@ -45,7 +48,9 @@ public class ExBlocks {
     public static Block
 
 
-            oreIron, oreSilicon,
+            liquidHelium,
+
+    oreIron, oreSilicon,
 
     exCoreShard, exContainer, exVault, subspaceStorageLinker,
 
@@ -90,7 +95,22 @@ public class ExBlocks {
     }
 
     public static void loadEnv() {
-        Log.info("Loading ores...");
+        Log.info("Loading env...");
+
+
+        liquidHelium = new Floor("liquid-helium"){{
+            speedMultiplier = 0.2f;
+            variants = 0;
+            liquidDrop = ExLiquids.liquidHelium;
+            liquidMultiplier = 1.5f;
+            isLiquid = true;
+            status = ExStatusEffects.freeze;
+            statusDuration = 120f;
+            drownTime = 200f;
+            cacheLayer = ExCacheLayer.liquidHelium;
+            albedo = 0.9f;
+            supportsOverlay = true;
+        }};
 
         oreIron = new OreBlock("ore-iron", ExItems.iron) {{
             oreDefault = true;
