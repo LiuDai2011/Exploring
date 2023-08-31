@@ -20,8 +20,8 @@ public class ExploringMain extends Mod {
     public void loadContent() {
         Log.info("Loading Exploring content.");
 
-        ExShaders.init();
-        ExCacheLayer.init();
+//        ExShaders.init();
+//        ExCacheLayer.init();
 
         ExStatusEffects.load();
         ExLiquids.load();

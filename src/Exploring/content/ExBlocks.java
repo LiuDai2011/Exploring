@@ -1,6 +1,5 @@
 package Exploring.content;
 
-import Exploring.graphics.ExCacheLayer;
 import Exploring.world.blocks.*;
 import Exploring.world.blocks.distribution.*;
 import Exploring.world.blocks.drills.ExAttributeCrafter;
@@ -30,6 +29,7 @@ import mindustry.entities.pattern.ShootBarrel;
 import mindustry.entities.pattern.ShootSpread;
 import mindustry.gen.Bullet;
 import mindustry.gen.Sounds;
+import mindustry.graphics.CacheLayer;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
@@ -98,7 +98,7 @@ public class ExBlocks {
         loadCaiDan();
     }
 
-    public static void loadEnv() {
+    private static void loadEnv() {
         Log.info("Loading env...");
 
 
@@ -111,7 +111,8 @@ public class ExBlocks {
             status = ExStatusEffects.freeze;
             statusDuration = 120f;
             drownTime = 200f;
-            cacheLayer = ExCacheLayer.liquidHelium;
+            cacheLayer = CacheLayer.water;
+//            cacheLayer = ExCacheLayer.liquidHelium;
             albedo = 0.9f;
             supportsOverlay = true;
         }};
@@ -129,7 +130,7 @@ public class ExBlocks {
         }};
     }
 
-    public static void loadStorage() {
+    private static void loadStorage() {
         Log.info("Loading cores...");
 
         exCoreShard = new ExCoreBlock("ex-core-shard") {{
@@ -169,7 +170,7 @@ public class ExBlocks {
         }};
     }
 
-    public static void loadWall() {
+    private static void loadWall() {
         Log.info("Loading walls...");
 
         int wallHealthMultiplier = 4;
@@ -302,7 +303,7 @@ public class ExBlocks {
         }};
     }
 
-    public static void loadFactory() {
+    private static void loadFactory() {
         Log.info("Loading factories...");
 
         siliconPurifier = new ExGenericCrafter("silicon-purifier") {{
@@ -429,7 +430,7 @@ public class ExBlocks {
         }};
     }
 
-    public static void loadPower() {
+    private static void loadPower() {
         Log.info("Loading power...");
 
         exPowerNode = new ExPowerNode("ex-power-node") {{
@@ -623,7 +624,7 @@ public class ExBlocks {
         }};
     }
 
-    public static void loadEffect() {
+    private static void loadEffect() {
         Log.info("Loading effects...");
 
         sandboxOverdriveDome = new ExOverdriveProjector("sandbox-overdrive-dome") {{
@@ -635,7 +636,7 @@ public class ExBlocks {
         }};
     }
 
-    public static void loadTurret() {
+    private static void loadTurret() {
         Log.info("Loading turrets...");
 
         test_pt = new ExItemTurret("test_pt") {{
@@ -1616,6 +1617,13 @@ public class ExBlocks {
                         width = 17f;
                         reloadMultiplier = 1.3f;
                     }},
+                    ExItems.titaniumAlloy, new ShrapnelBulletType() {{
+                        length = brange;
+                        damage = 222f;
+                        ammoMultiplier = 1f;
+                        width = 31f;
+                        reloadMultiplier = 3.1f;
+                    }},
                     Items.thorium, new ShrapnelBulletType() {{
                         length = brange;
                         damage = 105f;
@@ -2064,68 +2072,68 @@ public class ExBlocks {
             consumePower(9f);
         }};
 
-        ion = new ExItemTurret("ion") {
-            {
-                requirements(Category.turret, with(Items.copper, 1));
+        ion = new ExItemTurret("ion") {{
+            float offsetY = shootY = 16f + 5.1f;
+            float xOffsetMin = -5f, xOffsetMax = 5f;
 
-                ammo(
-                        ExItems.fullBattery, new BasicBulletType() {
-                            {
-                                pierce = true;
-                                damage = 50f;
-                                speed = 23f;
-                                width = 0.15f;
-                                height = 16f;
-                                lifetime = 1000f;
-                                ammoMultiplier = 1000;
-                            }
+            requirements(Category.turret, with(Items.copper, 1));
 
-                            @Override
-                            public void draw(Bullet b) {
-                                Draw.color();
-
-                                float
-                                        x1 = b.x - 8f * Mathf.sinDeg(b.rotation()),
-                                        y1 = b.y - 8f * Mathf.sinDeg(b.rotation()),
-                                        x2 = b.x + 8f * Mathf.sinDeg(b.rotation()),
-                                        y2 = b.y + 8f * Mathf.sinDeg(b.rotation());
-
-                                Drawf.line(Color.valueOf("ceeaf4"), x1, y1, x2, y2);
-
-                                Draw.reset();
-                            }
+            ammo(
+                    ExItems.fullBattery, new BasicBulletType() {
+                        {
+                            pierce = true;
+                            damage = 50f;
+                            speed = 23f;
+                            width = 0.15f;
+                            height = 56f;
+                            lifetime = 1000f;
+                            ammoMultiplier = 1000;
                         }
-                );
 
-                range = 254f;
+                        @Override
+                        public void draw(Bullet b) {
+                            Draw.color();
 
-                maxAmmo = 4000;
-                ammoPerShot = 5;
-                rotateSpeed = 15f;
-                reload = 1f;
-                ammoUseEffect = Fx.casing3Double;
-                recoil = 2.5f;
-                shake = 24f;
-                size = 2;
-                shootCone = 1f;
-                shootY = 16f + 5.1f;
-                envEnabled |= Env.space;
+                            float
+                                    r = b.rotation() - 90,
+                                    x1 = b.x - 26f * Mathf.sinDeg(r),
+                                    y1 = b.y + 26f * Mathf.cosDeg(r),
+                                    x2 = b.x + 26f * Mathf.sinDeg(r),
+                                    y2 = b.y - 26f * Mathf.cosDeg(r);
 
-                coolantMultiplier = 0.4f;
-                scaledHealth = 59f;
+                            Drawf.line(Color.valueOf("ceeaf4"), x1, y1, x2, y2);
 
-                coolant = consumeCoolant(0.8f);
-                consumePower(1f);
-            }
+                            Draw.reset();
+                        }
+                    }
+            );
 
-            public class ExItemTurretBuild extends ItemTurretBuild {
+            range = 254f;
+
+            maxAmmo = 4000;
+            ammoPerShot = 5;
+            rotateSpeed = 1000f;
+            reload = 1f;
+            ammoUseEffect = Fx.casing3Double;
+            recoil = 2.5f;
+            shake = 0f;
+            size = 2;
+            shootCone = 1f;
+            envEnabled |= Env.space;
+
+            coolantMultiplier = 0.4f;
+            scaledHealth = 59f;
+
+            coolant = consumeCoolant(0.8f);
+            consumePower(1f);
+
+            buildType = () -> new ItemTurretBuild(){
                 @Override
                 protected void shoot(BulletType type) {
-                    float X = Mathf.random(-5f, 5f);
-
                     float
-                            bulletX = x + Angles.trnsx(rotation - 90, X, shootY),
-                            bulletY = y + Angles.trnsy(rotation - 90, X, shootY);
+                            offsetX = Mathf.random(xOffsetMin, xOffsetMax),
+                            bulletX = x + Angles.trnsx(rotation - 90, offsetX, offsetY),
+                            bulletY = y + Angles.trnsy(rotation - 90, offsetX, offsetY);
 
                     if(shoot.firstShotDelay > 0){
                         chargeSound.at(bulletX, bulletY, Mathf.random(soundPitchMin, soundPitchMax));
@@ -2145,11 +2153,13 @@ public class ExBlocks {
                         useAmmo();
                     }
                 }
-            }
-        };
+            };
+
+            //TODO
+        }};
     }
 
-    public static void loadDrill() {
+    private static void loadDrill() {
         exMechanicalDrill = new ExDrill("ex-mechanical-drill") {{
             requirements(Category.production, with(Items.copper, 12));
             tier = 2;
@@ -2263,7 +2273,7 @@ public class ExBlocks {
         }};
     }
 
-    public static void loadDistribution() {
+    private static void loadDistribution() {
         exConveyor = new ExConveyor("ex-conveyor") {{
             requirements(Category.distribution, with(Items.copper, 1));
             health = 45;
@@ -2365,7 +2375,7 @@ public class ExBlocks {
         }};
     }
 
-    public static void loadCaiDan() {
+    private static void loadCaiDan() {
         Log.info("Loading CaiDan...");
 
         RA2 = new ExItemTurret("RA2") {{

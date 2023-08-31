@@ -12,7 +12,7 @@ public class ExCacheLayer {
 
     public static void init() {
         add(
-                liquidHelium = new CacheLayer.ShaderLayer(Shaders.water)
+                liquidHelium = new CacheLayer.ShaderLayer(ExShaders.liquidHelium)
         );
     }
 }
