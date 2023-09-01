@@ -2451,7 +2451,11 @@ public class ExBlocks {
                 public void onDestroyed() {
                     for (int i = 0; i < 4; i++) {
                         var vel = Geometry.d4(i);
-                        Vars.world.tile(tile.x + vel.x, tile.y + vel.y).setBlock(block, team, 0);
+                        try{
+                            Vars.world.tile(tile.x + vel.x, tile.y + vel.y).setBlock(block, team, 0);
+                        } catch (NullPointerException ignored) {
+
+                        }
                     }
                 }
             };
