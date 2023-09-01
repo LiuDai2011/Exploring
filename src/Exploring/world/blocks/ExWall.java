@@ -20,4 +20,8 @@ public class ExWall extends Wall {
                 () -> entity.health / entity.maxHealth
         ));
     }
+
+    public class ExWallBuild extends WallBuild {
+
+    }
 }

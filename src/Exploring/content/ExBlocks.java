@@ -16,9 +16,11 @@ import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Fill;
 import arc.math.Angles;
 import arc.math.Mathf;
+import arc.math.geom.Geometry;
 import arc.struct.EnumSet;
 import arc.util.Log;
 import arc.util.Time;
+import mindustry.Vars;
 import mindustry.content.*;
 import mindustry.entities.UnitSorts;
 import mindustry.entities.bullet.*;
@@ -81,7 +83,9 @@ public class ExBlocks {
 
     eternity, ballLightning, ion,
 
-    anuken, nianNianYouYu, guiY, RA2, No9527, lyr, oneGamma, zzcQAQ, paoTaiS, AarnMAX, RHN, chiRe, jianBian, boLuo, LiuDai;
+    anuken, nianNianYouYu, guiY, RA2, No9527, lyr, oneGamma, zzcQAQ, paoTaiS, AarnMAX, RHN,
+
+    chiRe, jianBian, boLuo, LiuDai, titaniumAlloyCopperWall;
 
     public static void load() {
         Log.info("Loading blocks...");
@@ -1969,7 +1973,7 @@ public class ExBlocks {
         }};
 
         ballLightning = new ExItemTurret("ball-lightning") {{
-            requirements(Category.turret, with(Items.copper, 1));
+            requirements(Category.turret, with(ExItems.iron, 2500, ExItems.siliconBlock, 1200, ExItems.titaniumAlloy, 1200, Items.thorium, 900, Items.metaglass, 900, Items.surgeAlloy, 1000));
 
             ammo(
                     ExItems.fullBattery, new BasicBulletType() {
@@ -2076,7 +2080,7 @@ public class ExBlocks {
             float offsetY = shootY = 16f + 5.1f;
             float xOffsetMin = -5f, xOffsetMax = 5f;
 
-            requirements(Category.turret, with(Items.copper, 1));
+            requirements(Category.turret, with(ExItems.iron, 200, ExItems.pureSilicon, 85, ExItems.titaniumAlloy, 90, Items.surgeAlloy, 90));
 
             ammo(
                     ExItems.fullBattery, new BasicBulletType() {
@@ -2434,6 +2438,23 @@ public class ExBlocks {
             tileDamage = 7f;
             length = 1000;
             tendrils = 4;
+        }};
+
+        titaniumAlloyCopperWall = new ExWall("titanium-alloy-copper-wall") {{
+            requirements(Category.defense, with(Items.copper, 6, Items.titanium, 6));
+            health = 80;
+            researchCostMultiplier = 0.1f;
+            envDisabled |= Env.scorching;
+
+            buildType = () -> new ExWallBuild() {
+                @Override
+                public void onDestroyed() {
+                    for (int i = 0; i < 4; i++) {
+                        var vel = Geometry.d4(i);
+                        Vars.world.tile(tile.x + vel.x, tile.y + vel.y).setBlock(block, team, 0);
+                    }
+                }
+            };
         }};
     }
 }
