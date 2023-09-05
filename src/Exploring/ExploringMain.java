@@ -35,6 +35,8 @@ public class ExploringMain extends Mod {
     public void loadContent() {
         Log.info("Loading Exploring content.");
 
+        ExContent.loadBLC();
+
         ExContent.load();
     }
 }

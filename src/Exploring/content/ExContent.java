@@ -11,16 +11,14 @@ public class ExContent {
 
     public static CacheLayer LHLayer;
 
-    Texture loadTex(String name, Cons<Texture> modifier){
+    static Texture loadTex(String name, Cons<Texture> modifier){
         Texture tex = new Texture(ExploringMain.MOD.root.child("textures").child(name + (name.endsWith(".png") ? "" : ".png")));
         modifier.get(tex);
 
         return tex;
     }
 
-    public void load() {
-        loadBLC();
-
+    public static void load() {
         ExShaders.init();
 
         ExStatusEffects.load();
@@ -34,14 +32,14 @@ public class ExContent {
 
     }
 
-    private void loadTexture() {
+    private static void loadTexture() {
          LHNoise = loadTex("LH-noise", t -> {
             t.setFilter(Texture.TextureFilter.linear);
             t.setWrap(Texture.TextureWrap.repeat);
         });
     }
 
-    private void loadBLC() {
+    public static void loadBLC() {
         loadTexture();
 
         CacheLayer.add(
