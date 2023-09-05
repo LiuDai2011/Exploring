@@ -17,6 +17,7 @@ import arc.graphics.g2d.Fill;
 import arc.math.Angles;
 import arc.math.Mathf;
 import arc.math.geom.Geometry;
+import arc.math.geom.Point2;
 import arc.struct.EnumSet;
 import arc.util.Log;
 import arc.util.Time;
@@ -115,8 +116,8 @@ public class ExBlocks {
             status = ExStatusEffects.freeze;
             statusDuration = 120f;
             drownTime = 200f;
-            cacheLayer = CacheLayer.water;
-//            cacheLayer = ExCacheLayer.liquidHelium;
+//            cacheLayer = CacheLayer.slag;
+            cacheLayer = ExContent.LHLayer;
             albedo = 0.9f;
             supportsOverlay = true;
         }};
@@ -2131,7 +2132,7 @@ public class ExBlocks {
             coolant = consumeCoolant(0.8f);
             consumePower(1f);
 
-            buildType = () -> new ItemTurretBuild(){
+            buildType = () -> new ExItemTurretBuild() {
                 @Override
                 protected void shoot(BulletType type) {
                     float
@@ -2139,21 +2140,21 @@ public class ExBlocks {
                             bulletX = x + Angles.trnsx(rotation - 90, offsetX, offsetY),
                             bulletY = y + Angles.trnsy(rotation - 90, offsetX, offsetY);
 
-                    if(shoot.firstShotDelay > 0){
+                    if (shoot.firstShotDelay > 0) {
                         chargeSound.at(bulletX, bulletY, Mathf.random(soundPitchMin, soundPitchMax));
                         type.chargeEffect.at(bulletX, bulletY, rotation);
                     }
 
                     shoot.shoot(barrelCounter, (xOffset, yOffset, angle, delay, mover) -> {
                         queuedBullets++;
-                        if(delay > 0f){
+                        if (delay > 0f) {
                             Time.run(delay, () -> bullet(type, xOffset, yOffset, angle, mover));
-                        }else{
+                        } else {
                             bullet(type, xOffset, yOffset, angle, mover);
                         }
                     }, () -> barrelCounter++);
 
-                    if(consumeAmmoOnce){
+                    if (consumeAmmoOnce) {
                         useAmmo();
                     }
                 }
@@ -2451,11 +2452,47 @@ public class ExBlocks {
                 public void onDestroyed() {
                     for (int i = 0; i < 4; i++) {
                         var vel = Geometry.d4(i);
-                        try{
-                            Vars.world.tile(tile.x + vel.x, tile.y + vel.y).setBlock(block, team, 0);
-                        } catch (NullPointerException ignored) {
+                        var t = Vars.world.tile(tile.x + vel.x, tile.y + vel.y);
+                        if (t != null)
+                            t.setBlock(block, team, 0);
+                    }
+                }
+            };
+        }};
 
+        RHN = new ExWall("RHN") {{
+            requirements(Category.defense, with(Items.copper, 1));
+            health = 800;
+            researchCostMultiplier = 0.1f;
+            envDisabled |= Env.scorching;
+            update = true;
+
+            buildType = () -> new ExWallBuild() {
+                {
+                    update = true;
+                }
+
+                private float time = 0f;
+                private int id = 0;
+
+                @Override
+                public void updateTile() {
+                    time += delta();
+                    if (time >= 10f) {
+                        if (id < 10) {
+                            for (int i = 0; i < 8; i++) {
+                                var pos = new Point2(tile.x, tile.y);
+                                var vel = Geometry.d8(i);
+                                for (int j = 0; j <= id; j++) pos.add(vel);
+                                var t = Vars.world.tile(pos.x, pos.y);
+                                if (t != null && t.build == null)
+                                    t.setBlock(Blocks.air, team, 0);
+                            }
+                        } else if (id >= 25) {
+                            kill();
                         }
+                        id++;
+                        time %= 10f;
                     }
                 }
             };

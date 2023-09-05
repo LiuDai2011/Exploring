@@ -2,6 +2,7 @@ package Exploring.world.blocks.turrets;
 
 import arc.Core;
 import arc.graphics.Color;
+import mindustry.entities.bullet.BulletType;
 import mindustry.ui.Bar;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 
@@ -19,5 +20,8 @@ public class ExItemTurret extends ItemTurret {
                 () -> Color.valueOf("ff0000"),
                 () -> entity.health / entity.maxHealth
         ));
+    }
+
+    public class ExItemTurretBuild extends ItemTurretBuild {
     }
 }
