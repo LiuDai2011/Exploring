@@ -19,7 +19,7 @@ public class ExContent {
     }
 
     public static void load() {
-        ExShaders.init();
+//        ExShaders.init();
 
         ExStatusEffects.load();
         ExLiquids.load();

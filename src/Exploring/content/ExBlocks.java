@@ -116,8 +116,8 @@ public class ExBlocks {
             status = ExStatusEffects.freeze;
             statusDuration = 120f;
             drownTime = 200f;
-//            cacheLayer = CacheLayer.slag;
-            cacheLayer = ExContent.LHLayer;
+            cacheLayer = CacheLayer.slag;
+//            cacheLayer = ExContent.LHLayer;
             albedo = 0.9f;
             supportsOverlay = true;
         }};
