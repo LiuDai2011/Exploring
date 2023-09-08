@@ -11,7 +11,6 @@ public class ExItems {
             stone;
 
     public static void load() {
-        Items.silicon.hardness = 3;
         titaniumAlloy = new Item("titanium-alloy", Color.valueOf("9eb0eb")) {{
             cost = 1f;
         }};
@@ -41,6 +40,10 @@ public class ExItems {
         fullBattery = new Item("full-battery", Color.valueOf("ffee9e")){{
             cost = 1f;
             charge = 5f;
+        }};
+        stone = new Item("stone", Color.valueOf("ffee9e")){{
+            cost = 1f;
+            hardness = 2;
         }};
     }
 }

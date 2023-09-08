@@ -1,8 +1,10 @@
 package Exploring;
 
 import Exploring.content.ExContent;
+import Exploring.graphics.ExShaders;
 import Exploring.io.AboutModDialog;
 import arc.util.Log;
+import mindustry.Vars;
 import mindustry.mod.Mod;
 import mindustry.mod.Mods;
 
@@ -35,7 +37,13 @@ public class ExploringMain extends Mod {
     public void loadContent() {
         Log.info("Loading Exploring content.");
 
-//        ExContent.loadBLC();
+        Log.info("Loading Exploring Mod Object.");
+
+        MOD = Vars.mods.getMod(getClass());
+
+//        ExShaders.init();
+//
+//        ExContent.loadBeforeContent();
 
         ExContent.load();
     }

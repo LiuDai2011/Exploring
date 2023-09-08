@@ -21,108 +21,17 @@ public class SubspaceStorageLinker extends ExStorageBlock {
         hasPower = true;
     }
 
-    public class SubspaceStorageLinkerBuild extends StorageBuild {
-        public float timer = 0f;
-        public float effectTimer = 0f;
-
-
-        public boolean hadPower() {
-            return !Mathf.zero(getPower());
-        }
-
-        public float getPower() {
-            return consumesPower ? (power.graph.getLastPowerProduced() / power.graph.getLastPowerNeeded()) : 1f;
-        }
-
-        @Override
-        public boolean acceptItem(Building source, Item item) {
-            return hadPower() && (linkedCore != null ? linkedCore.acceptItem(source, item) : items.get(item) < getMaximumAccepted(item));
-        }
-
-        @Override
-        public void updateTile() {
-            super.updateTile();
-            timer += Time.delta;
-            if(hadPower()) effectTimer += Time.delta;
-            else effectTimer = 0f;
-            if(timer * 60 < runEffect.lifetime) return ;
-            if (wasVisible && hadPower() && effectTimer >= runEffect.lifetime) {
-                runEffect.at(x, y);
-            }
-            timer %= 1f;
-            effectTimer %= runEffect.lifetime;
-        }
-
-        @Override
-        public void handleItem(Building source, Item item) {
-            if (!hadPower()) return;
-            if (linkedCore != null) {
-                if (linkedCore.items.get(item) >= ((CoreBlock.CoreBuild) linkedCore).storageCapacity) {
-                    incinerateEffect(this, source);
-                }
-                ((CoreBlock.CoreBuild) linkedCore).noEffect = true;
-                linkedCore.handleItem(source, item);
-            } else {
-                super.handleItem(source, item);
-            }
-        }
-
-        @Override
-        public int removeStack(Item item, int amount) {
-            if (hadPower()) {
-                int result = super.removeStack(item, amount);
-
-                if (linkedCore != null && team == state.rules.defaultTeam && state.isCampaign()) {
-                    state.rules.sector.info.handleCoreItem(item, -result);
-                }
-
-                return result;
-            } else {
-                return 0;
-            }
-        }
-
-        @Override
-        public int getMaximumAccepted(Item item) {
-            return linkedCore != null ? linkedCore.getMaximumAccepted(item) : hadPower()?itemCapacity:0;
-        }
-
-        @Override
-        public int explosionItemCap() {
-            return linkedCore != null ? Math.min(itemCapacity / 60, 6) : hadPower()?itemCapacity:0;
-        }
-
-        @Override
-        public void overwrote(Seq<Building> previous) {
-            if (linkedCore == null) {
-                for (Building other : previous) {
-                    if (other.items != null && other.items != items) {
-                        items.add(other.items);
-                    }
-                }
-
-                items.each((i, a) -> items.set(i, Math.min(a, hadPower() ? itemCapacity : 0)));
-            }
-        }
-
-        @Override
-        public boolean canPickup() {
-            return super.canPickup() && !hadPower();
-        }
-
-        @Override
-        public boolean canUnload() {
-            return super.canUnload() && hadPower();
-        }
-    }
-
 //    public class SubspaceStorageLinkerBuild extends StorageBuild {
 //        public float timer = 0f;
 //        public float effectTimer = 0f;
 //
 //
 //        public boolean hadPower() {
-//            return !Mathf.zero(power.status);
+//            return !Mathf.zero(getPower());
+//        }
+//
+//        public float getPower() {
+//            return consumesPower ? (power.graph.getLastPowerProduced() / power.graph.getLastPowerNeeded()) : 1f;
 //        }
 //
 //        @Override
@@ -206,4 +115,95 @@ public class SubspaceStorageLinker extends ExStorageBlock {
 //            return super.canUnload() && hadPower();
 //        }
 //    }
+
+    public class SubspaceStorageLinkerBuild extends StorageBuild {
+        public float timer = 0f;
+        public float effectTimer = 0f;
+
+
+        public boolean hadPower() {
+            return !Mathf.zero(power.status);
+        }
+
+        @Override
+        public boolean acceptItem(Building source, Item item) {
+            return hadPower() && (linkedCore != null ? linkedCore.acceptItem(source, item) : items.get(item) < getMaximumAccepted(item));
+        }
+
+        @Override
+        public void updateTile() {
+            super.updateTile();
+            timer += Time.delta;
+            if(hadPower()) effectTimer += Time.delta;
+            else effectTimer = 0f;
+            if(timer * 60 < runEffect.lifetime) return ;
+            if (wasVisible && hadPower() && effectTimer >= runEffect.lifetime) {
+                runEffect.at(x, y);
+            }
+            timer %= 1f;
+            effectTimer %= runEffect.lifetime;
+        }
+
+        @Override
+        public void handleItem(Building source, Item item) {
+            if (!hadPower()) return;
+            if (linkedCore != null) {
+                if (linkedCore.items.get(item) >= ((CoreBlock.CoreBuild) linkedCore).storageCapacity) {
+                    incinerateEffect(this, source);
+                }
+                ((CoreBlock.CoreBuild) linkedCore).noEffect = true;
+                linkedCore.handleItem(source, item);
+            } else {
+                super.handleItem(source, item);
+            }
+        }
+
+        @Override
+        public int removeStack(Item item, int amount) {
+            if (hadPower()) {
+                int result = super.removeStack(item, amount);
+
+                if (linkedCore != null && team == state.rules.defaultTeam && state.isCampaign()) {
+                    state.rules.sector.info.handleCoreItem(item, -result);
+                }
+
+                return result;
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public int getMaximumAccepted(Item item) {
+            return linkedCore != null ? linkedCore.getMaximumAccepted(item) : hadPower()?itemCapacity:0;
+        }
+
+        @Override
+        public int explosionItemCap() {
+            return linkedCore != null ? Math.min(itemCapacity / 60, 6) : hadPower()?itemCapacity:0;
+        }
+
+        @Override
+        public void overwrote(Seq<Building> previous) {
+            if (linkedCore == null) {
+                for (Building other : previous) {
+                    if (other.items != null && other.items != items) {
+                        items.add(other.items);
+                    }
+                }
+
+                items.each((i, a) -> items.set(i, Math.min(a, hadPower() ? itemCapacity : 0)));
+            }
+        }
+
+        @Override
+        public boolean canPickup() {
+            return super.canPickup() && !hadPower();
+        }
+
+        @Override
+        public boolean canUnload() {
+            return super.canUnload() && hadPower();
+        }
+    }
 }

@@ -19,8 +19,6 @@ public class ExContent {
     }
 
     public static void load() {
-//        ExShaders.init();
-
         ExStatusEffects.load();
         ExLiquids.load();
         ExItems.load();
@@ -39,7 +37,7 @@ public class ExContent {
         });
     }
 
-    public static void loadBLC() {
+    public static void loadBeforeContent() {
         loadTexture();
 
         CacheLayer.add(

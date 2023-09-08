@@ -18,7 +18,7 @@ public class ExShaders {
         liquidHelium = new ModSurfaceShader("liquid-helium") {
             @Override
             public String textureName(){
-                return "noise";
+                return "LH-noise";
             }
 
             @Override

@@ -23,12 +23,15 @@ import arc.util.Log;
 import arc.util.Time;
 import mindustry.Vars;
 import mindustry.content.*;
+import mindustry.entities.Effect;
+import mindustry.entities.Mover;
 import mindustry.entities.UnitSorts;
 import mindustry.entities.bullet.*;
 import mindustry.entities.effect.MultiEffect;
 import mindustry.entities.part.RegionPart;
 import mindustry.entities.pattern.ShootAlternate;
 import mindustry.entities.pattern.ShootBarrel;
+import mindustry.entities.pattern.ShootPattern;
 import mindustry.entities.pattern.ShootSpread;
 import mindustry.gen.Bullet;
 import mindustry.gen.Sounds;
@@ -50,7 +53,6 @@ import mindustry.world.meta.*;
 
 import static mindustry.type.ItemStack.with;
 
-//hou ec80fe9aad          qian 93fde537c7
 public class ExBlocks {
     public static Block
 
@@ -1992,7 +1994,6 @@ public class ExBlocks {
                             intervalBullet = new LightningBulletType() {{
                                 damage = 150;
                                 lightningLength = 8;
-                                collidesAir = false;
                                 ammoMultiplier = 1f;
 
                                 //for visual stats only.
@@ -2006,7 +2007,6 @@ public class ExBlocks {
                                     statusDuration = 10f;
                                     hittable = false;
                                     lightColor = Color.white;
-                                    collidesAir = false;
                                     buildingDamageMultiplier = 0.9f;
                                 }};
                             }};
@@ -2017,7 +2017,6 @@ public class ExBlocks {
                                 fragBullet = new LightningBulletType() {{
                                     damage = 350;
                                     lightningLength = 40;
-                                    collidesAir = false;
                                     ammoMultiplier = 1f;
 
                                     lightningType = new BulletType(0.0001f, 0f) {{
@@ -2028,7 +2027,6 @@ public class ExBlocks {
                                         statusDuration = 35f;
                                         hittable = false;
                                         lightColor = Color.white;
-                                        collidesAir = false;
                                     }};
                                 }};
                             }};
@@ -2089,8 +2087,8 @@ public class ExBlocks {
                             pierce = true;
                             damage = 50f;
                             speed = 23f;
-                            width = 0.15f;
-                            height = 56f;
+                            width = 1f;
+                            height = 64f;
                             lifetime = 1000f;
                             ammoMultiplier = 1000;
                         }
@@ -2116,7 +2114,7 @@ public class ExBlocks {
             range = 254f;
 
             maxAmmo = 4000;
-            ammoPerShot = 5;
+            ammoPerShot = 6;
             rotateSpeed = 1000f;
             reload = 1f;
             ammoUseEffect = Fx.casing3Double;
@@ -2130,37 +2128,84 @@ public class ExBlocks {
             scaledHealth = 59f;
 
             coolant = consumeCoolant(0.8f);
-            consumePower(1f);
+            consumePower(3.9f);
 
             buildType = () -> new ExItemTurretBuild() {
                 @Override
                 protected void shoot(BulletType type) {
+                    for (int i = 0; i < 5; i++) {
+                        float
+                                offsetX = Mathf.random(xOffsetMin, xOffsetMax),
+                                bulletX = x + Angles.trnsx(rotation - 90, offsetX, offsetY),
+                                bulletY = y + Angles.trnsy(rotation - 90, offsetX, offsetY);
+
+                        if (shoot.firstShotDelay > 0) {
+                            chargeSound.at(bulletX, bulletY, Mathf.random(soundPitchMin, soundPitchMax));
+                            type.chargeEffect.at(bulletX, bulletY, rotation);
+                        }
+
+                        shoot.shoot(barrelCounter, (xOffset, yOffset, angle, delay, mover) -> {
+                            queuedBullets++;
+                            if (delay > 0f) {
+                                Time.run(delay, () -> bullet(type, xOffset, yOffset, angle, mover));
+                            } else {
+                                bullet(type, xOffset, yOffset, angle, mover);
+                            }
+                        }, () -> barrelCounter++);
+
+                        if (consumeAmmoOnce) {
+                            try {
+                                useAmmo();
+                            } catch (IllegalStateException ignored) {
+
+                            }
+                        }
+                    }
+                }
+
+                protected void bullet(BulletType type, float xOffset, float yOffset, float angleOffset, Mover mover){
+                    queuedBullets --;
+
+                    if(dead || (!consumeAmmoOnce && !hasAmmo())) return;
+
                     float
                             offsetX = Mathf.random(xOffsetMin, xOffsetMax),
-                            bulletX = x + Angles.trnsx(rotation - 90, offsetX, offsetY),
-                            bulletY = y + Angles.trnsy(rotation - 90, offsetX, offsetY);
+                            xSpread = Mathf.range(xRand),
+                            bulletX = x + Angles.trnsx(rotation - 90, shootX + xOffset + xSpread + offsetX, shootY + yOffset + offsetY),
+                            bulletY = y + Angles.trnsy(rotation - 90, shootX + xOffset + xSpread + offsetX, shootY + yOffset + offsetY),
+                            shootAngle = rotation + angleOffset + Mathf.range(inaccuracy + type.inaccuracy);
 
-                    if (shoot.firstShotDelay > 0) {
-                        chargeSound.at(bulletX, bulletY, Mathf.random(soundPitchMin, soundPitchMax));
-                        type.chargeEffect.at(bulletX, bulletY, rotation);
+                    float lifeScl = type.scaleLife ? Mathf.clamp(Mathf.dst(bulletX, bulletY, targetPos.x, targetPos.y) / type.range, minRange / type.range, range() / type.range) : 1f;
+
+                    //TODO aimX / aimY for multi shot turrets?
+                    handleBullet(type.create(this, team, bulletX, bulletY, shootAngle, -1f, (1f - velocityRnd) + Mathf.random(velocityRnd), lifeScl, null, mover, targetPos.x, targetPos.y), xOffset, yOffset, shootAngle - rotation);
+
+                    (shootEffect == null ? type.shootEffect : shootEffect).at(bulletX, bulletY, rotation + angleOffset, type.hitColor);
+                    (smokeEffect == null ? type.smokeEffect : smokeEffect).at(bulletX, bulletY, rotation + angleOffset, type.hitColor);
+                    shootSound.at(bulletX, bulletY, Mathf.random(soundPitchMin, soundPitchMax));
+
+                    ammoUseEffect.at(
+                            x - Angles.trnsx(rotation, ammoEjectBack),
+                            y - Angles.trnsy(rotation, ammoEjectBack),
+                            rotation * Mathf.sign(xOffset)
+                    );
+
+                    if(shake > 0){
+                        Effect.shake(shake, shake, this);
                     }
 
-                    shoot.shoot(barrelCounter, (xOffset, yOffset, angle, delay, mover) -> {
-                        queuedBullets++;
-                        if (delay > 0f) {
-                            Time.run(delay, () -> bullet(type, xOffset, yOffset, angle, mover));
-                        } else {
-                            bullet(type, xOffset, yOffset, angle, mover);
-                        }
-                    }, () -> barrelCounter++);
+                    curRecoil = 1f;
+                    if(recoils > 0){
+                        curRecoils[barrelCounter % recoils] = 1f;
+                    }
+                    heat = 1f;
+                    totalShots++;
 
-                    if (consumeAmmoOnce) {
+                    if(!consumeAmmoOnce){
                         useAmmo();
                     }
                 }
             };
-
-            //TODO
         }};
     }
 
