@@ -16,6 +16,11 @@ public class ExploringMain extends Mod {
     public static final String MOD_REPO = "LiuDai2011/Exploring";
     public static final String MOD_RELEASES = "https://github.com/LiuDai2011/Exploring/releases";
     public static final String MOD_GITHUB_URL = "https://github.com/LiuDai2011/Exploring.git";
+    public static final String UPDATE_LOG = """
+            Version a0.2.69p3:
+                Add Block:"Author-Liu-Dai"
+                    Can Remove All Enemy Buildings
+            """;
 
     public static Mods.LoadedMod MOD;
 
