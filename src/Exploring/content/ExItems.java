@@ -41,7 +41,7 @@ public class ExItems {
             cost = 1f;
             charge = 5f;
         }};
-        stone = new Item("stone", Color.valueOf("ffee9e")){{
+        stone = new Item("stone", Color.valueOf("54545b")){{
             cost = 1f;
             hardness = 2;
         }};

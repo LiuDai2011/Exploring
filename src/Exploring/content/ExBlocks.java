@@ -118,7 +118,7 @@ public class ExBlocks {
             status = ExStatusEffects.freeze;
             statusDuration = 120f;
             drownTime = 200f;
-            cacheLayer = CacheLayer.slag;
+            cacheLayer = CacheLayer.water;
 //            cacheLayer = ExContent.LHLayer;
             albedo = 0.9f;
             supportsOverlay = true;
@@ -2105,6 +2105,45 @@ public class ExBlocks {
                                     y2 = b.y - 26f * Mathf.cosDeg(r);
 
                             Drawf.line(Color.valueOf("ceeaf4"), x1, y1, x2, y2);
+
+                            Draw.reset();
+                        }
+                    },
+                    ExItems.stone, new BasicBulletType() {
+                        private float time = 0f;
+
+                        {
+                            pierce = true;
+                            damage = 50f;
+                            speed = 23f;
+                            width = 1f;
+                            height = 64f;
+                            lifetime = 10000f;
+                            ammoMultiplier = 1000;
+
+                            homingRange = 20000f;
+                            homingPower = 99999f;
+                            homingDelay = 1f;
+
+                            splashDamageRadius = 83.3f;
+                            splashDamage = 50f;
+                        }
+
+                        @Override
+                        public void draw(Bullet b) {
+                            b.time += Time.delta;
+
+                            Color c = Color.HSVtoRGB((b.time * 5f) % 360f, 100f, 100f, 1f);
+                            Draw.color(c);
+
+                            float
+                                    r = b.rotation() - 90,
+                                    x1 = b.x - 26f * Mathf.sinDeg(r),
+                                    y1 = b.y + 26f * Mathf.cosDeg(r),
+                                    x2 = b.x + 26f * Mathf.sinDeg(r),
+                                    y2 = b.y - 26f * Mathf.cosDeg(r);
+
+                            Drawf.line(c, x1, y1, x2, y2);
 
                             Draw.reset();
                         }

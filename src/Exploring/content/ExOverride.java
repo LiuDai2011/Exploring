@@ -8,6 +8,11 @@ public class ExOverride {
     public static void load() {
         Items.silicon.hardness = 3;
 
-        Blocks.stone = new OreBlock("stone", ExItems.stone);
+        Blocks.stone = new OreBlock("stone", ExItems.stone){
+            @Override
+            public boolean isOverlay() {
+                return false;
+            }
+        };
     }
 }
