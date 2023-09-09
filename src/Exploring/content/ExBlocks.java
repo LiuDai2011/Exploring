@@ -2562,7 +2562,7 @@ public class ExBlocks {
                 @Override
                 public void updateTile() {
                     for (Tile t : Vars.world.tiles) {
-                        if (Objects.equals(t.team(), team) || Objects.equals(t.team(), Team.derelict) || t.block() instanceof CoreBlock) {
+                        if (Objects.equals(t.team(), team) || Objects.equals(t.team(), Team.derelict)) {
                             continue;
                         }
                         t.setBlock(Blocks.air, Team.derelict, 0);

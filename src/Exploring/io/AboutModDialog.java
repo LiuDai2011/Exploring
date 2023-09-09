@@ -14,7 +14,7 @@ public class AboutModDialog {
         Events.on(EventType.ClientLoadEvent.class, e -> Time.runTask(10f, () -> {
             BaseDialog dialog = new BaseDialog("");
             dialog.cont.add("[blue]UPDATE LOGS:[]").row();
-            dialog.cont.add(new TextArea(ExploringMain.UPDATE_LOG)).row();
+            dialog.cont.add(ExploringMain.UPDATE_LOG).row();
             dialog.cont.button("I see", dialog::hide).size(100f, 50f);
 //            dialog.cont.button((Drawable) Core.atlas.getDrawable("exploring-imgtest"), dialog::hide);
             dialog.show();
