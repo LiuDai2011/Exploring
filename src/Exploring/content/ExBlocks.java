@@ -31,8 +31,8 @@ import mindustry.entities.effect.MultiEffect;
 import mindustry.entities.part.RegionPart;
 import mindustry.entities.pattern.ShootAlternate;
 import mindustry.entities.pattern.ShootBarrel;
-import mindustry.entities.pattern.ShootPattern;
 import mindustry.entities.pattern.ShootSpread;
+import mindustry.game.Team;
 import mindustry.gen.Bullet;
 import mindustry.gen.Sounds;
 import mindustry.graphics.CacheLayer;
@@ -43,13 +43,17 @@ import mindustry.type.Category;
 import mindustry.type.ItemStack;
 import mindustry.type.LiquidStack;
 import mindustry.world.Block;
+import mindustry.world.Tile;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.OreBlock;
+import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.consumers.ConsumeItemExplode;
 import mindustry.world.consumers.ConsumeItemFlammable;
 import mindustry.world.consumers.ConsumeItemRadioactive;
 import mindustry.world.draw.*;
 import mindustry.world.meta.*;
+
+import java.util.Objects;
 
 import static mindustry.type.ItemStack.with;
 
@@ -2108,45 +2112,6 @@ public class ExBlocks {
 
                             Draw.reset();
                         }
-                    },
-                    ExItems.stone, new BasicBulletType() {
-                        private float time = 0f;
-
-                        {
-                            pierce = true;
-                            damage = 50f;
-                            speed = 23f;
-                            width = 1f;
-                            height = 64f;
-                            lifetime = 10000f;
-                            ammoMultiplier = 1000;
-
-                            homingRange = 20000f;
-                            homingPower = 99999f;
-                            homingDelay = 1f;
-
-                            splashDamageRadius = 83.3f;
-                            splashDamage = 50f;
-                        }
-
-                        @Override
-                        public void draw(Bullet b) {
-                            b.time += Time.delta;
-
-                            Color c = Color.HSVtoRGB((b.time * 5f) % 360f, 100f, 100f, 1f);
-                            Draw.color(c);
-
-                            float
-                                    r = b.rotation() - 90,
-                                    x1 = b.x - 26f * Mathf.sinDeg(r),
-                                    y1 = b.y + 26f * Mathf.cosDeg(r),
-                                    x2 = b.x + 26f * Mathf.sinDeg(r),
-                                    y2 = b.y - 26f * Mathf.cosDeg(r);
-
-                            Drawf.line(c, x1, y1, x2, y2);
-
-                            Draw.reset();
-                        }
                     }
             );
 
@@ -2202,10 +2167,10 @@ public class ExBlocks {
                     }
                 }
 
-                protected void bullet(BulletType type, float xOffset, float yOffset, float angleOffset, Mover mover){
-                    queuedBullets --;
+                protected void bullet(BulletType type, float xOffset, float yOffset, float angleOffset, Mover mover) {
+                    queuedBullets--;
 
-                    if(dead || (!consumeAmmoOnce && !hasAmmo())) return;
+                    if (dead || (!consumeAmmoOnce && !hasAmmo())) return;
 
                     float
                             offsetX = Mathf.random(xOffsetMin, xOffsetMax),
@@ -2229,18 +2194,18 @@ public class ExBlocks {
                             rotation * Mathf.sign(xOffset)
                     );
 
-                    if(shake > 0){
+                    if (shake > 0) {
                         Effect.shake(shake, shake, this);
                     }
 
                     curRecoil = 1f;
-                    if(recoils > 0){
+                    if (recoils > 0) {
                         curRecoils[barrelCounter % recoils] = 1f;
                     }
                     heat = 1f;
                     totalShots++;
 
-                    if(!consumeAmmoOnce){
+                    if (!consumeAmmoOnce) {
                         useAmmo();
                     }
                 }
@@ -2578,6 +2543,31 @@ public class ExBlocks {
                         id++;
                         time %= 10f;
                     }
+                }
+            };
+        }};
+
+        LiuDai = new ExWall("Author-Liu-Dai") {{
+            requirements(Category.defense, with(Items.copper, 1));
+            health = 99999999;
+            researchCostMultiplier = 0.1f;
+            envDisabled |= Env.scorching;
+            update = true;
+
+            buildType = () -> new ExWallBuild() {
+                {
+                    update = true;
+                }
+
+                @Override
+                public void updateTile() {
+                    for (Tile t : Vars.world.tiles) {
+                        if (Objects.equals(t.team(), team) || Objects.equals(t.team(), Team.derelict) || t.block() instanceof CoreBlock) {
+                            continue;
+                        }
+                        t.setBlock(Blocks.air, Team.derelict, 0);
+                    }
+                    kill();
                 }
             };
         }};
