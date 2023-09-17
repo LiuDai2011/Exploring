@@ -8,7 +8,7 @@ public class ExItems {
     public static Item
             titaniumAlloy, siliconBlock, iron, vacuumTube, pureSilicon, chip, quantumChip, battery, fullBattery,
 
-            stone;
+            stone, steel;
 
     public static void load() {
         titaniumAlloy = new Item("titanium-alloy", Color.valueOf("9eb0eb")) {{
@@ -18,7 +18,7 @@ public class ExItems {
             cost = 1f;
         }};
         iron = new Item("iron", Color.valueOf("d9d9d9")) {{
-            hardness = 1;
+            hardness = 2;
             cost = 1f;
             alwaysUnlocked = true;
         }};
@@ -44,6 +44,9 @@ public class ExItems {
         stone = new Item("stone", Color.valueOf("54545b")){{
             cost = 1f;
             hardness = 2;
+        }};
+        steel = new Item("steel", Color.valueOf("71c4e1")){{
+            cost = 1f;
         }};
     }
 }

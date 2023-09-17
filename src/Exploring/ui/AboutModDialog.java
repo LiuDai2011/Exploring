@@ -1,10 +1,7 @@
-package Exploring.io;
+package Exploring.ui;
 
 import Exploring.ExploringMain;
-import arc.Core;
 import arc.Events;
-import arc.scene.style.Drawable;
-import arc.scene.ui.TextArea;
 import arc.util.Time;
 import mindustry.game.EventType;
 import mindustry.ui.dialogs.BaseDialog;

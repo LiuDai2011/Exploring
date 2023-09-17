@@ -8,6 +8,7 @@ import mindustry.world.blocks.production.GenericCrafter;
 public class ExGenericCrafter extends GenericCrafter {
     public ExGenericCrafter(String name) {
         super(name);
+        buildType = ExGenericCrafterBuild::new;
     }
 
     @Override
@@ -19,5 +20,9 @@ public class ExGenericCrafter extends GenericCrafter {
                 () -> Color.valueOf("ff0000"),
                 () -> entity.health / entity.maxHealth
         ));
+    }
+
+    public class ExGenericCrafterBuild extends GenericCrafterBuild {
+
     }
 }

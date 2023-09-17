@@ -1,15 +1,21 @@
 package Exploring;
 
 import Exploring.content.ExContent;
-import Exploring.graphics.ExShaders;
-import Exploring.io.AboutModDialog;
+import Exploring.ui.AboutModDialog;
 import arc.util.Log;
 import mindustry.Vars;
 import mindustry.mod.Mod;
 import mindustry.mod.Mods;
 
 public class ExploringMain extends Mod {
-    // TODO: 2023/7/26 (#1#) Update version
+    /*
+     TODO: Update version
+     TODO: EnergyBall
+     TODO: RusttableWall
+     TODO: molecularWeight
+     TODO: Unit
+     TODO: 研究中心
+    */
 
     public static final String MOD_NAME = "exploring";
     public static final String MOD_NAME_BAR = "exploring-";
@@ -18,8 +24,7 @@ public class ExploringMain extends Mod {
     public static final String MOD_GITHUB_URL = "https://github.com/LiuDai2011/Exploring.git";
     public static final String UPDATE_LOG = """
             Version a0.2.69p3:
-                Add Block:"Author-Liu-Dai"
-                    Can Remove All Enemy Buildings
+                Add Block:"Author-Liu-Dai", Can Remove All Enemy Buildings
             """;
 
     public static Mods.LoadedMod MOD;
@@ -51,5 +56,7 @@ public class ExploringMain extends Mod {
 //        ExContent.loadBeforeContent();
 
         ExContent.load();
+
+        ExContent.loadVars();
     }
 }

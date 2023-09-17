@@ -1,5 +1,7 @@
 package Exploring.content;
 
+import Exploring.tool.Pair;
+import Exploring.tool.Tuple;
 import Exploring.world.blocks.*;
 import Exploring.world.blocks.distribution.*;
 import Exploring.world.blocks.drills.ExAttributeCrafter;
@@ -33,6 +35,7 @@ import mindustry.entities.pattern.ShootAlternate;
 import mindustry.entities.pattern.ShootBarrel;
 import mindustry.entities.pattern.ShootSpread;
 import mindustry.game.Team;
+import mindustry.gen.Building;
 import mindustry.gen.Bullet;
 import mindustry.gen.Sounds;
 import mindustry.graphics.CacheLayer;
@@ -43,6 +46,7 @@ import mindustry.type.Category;
 import mindustry.type.ItemStack;
 import mindustry.type.LiquidStack;
 import mindustry.world.Block;
+import mindustry.world.Build;
 import mindustry.world.Tile;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.OreBlock;
@@ -70,7 +74,7 @@ public class ExBlocks {
     exCopperWall, exCopperWallLarge, exTitaniumWall, exTitaniumWallLarge, exPlastaniumWall, exPlastaniumWallLarge, exThoriumWall, exThoriumWallLarge, exDoor, exDoorLarge,
             exPhaseWall, exPhaseWallLarge, exSurgeWall, exSurgeWallLarge, leadWall, leadWallLarge, testWall,
 
-    siliconPurifier, tubeMakingMachine, siliconRecombiner, titaniumFurnace, liquidHeliumCooler,
+    siliconPurifier, tubeMakingMachine, siliconRecombiner, titaniumFurnace, liquidHeliumCooler, steelFurnace,
 
     airCollector,
 
@@ -89,6 +93,8 @@ public class ExBlocks {
     test_pt, exDuo, exScatter, exScorch, exHail, exArc, exWave, exLancer, exSwarmer, exSalvo, exFuse, exRipple, exCyclone, exForeshadow, exSpectre, exMeltdown, exSegment, exParallax, exTsunami,
 
     eternity, ballLightning, ion,
+
+    energyBall,
 
     anuken, nianNianYouYu, guiY, RA2, No9527, lyr, oneGamma, zzcQAQ, paoTaiS, AarnMAX, RHN,
 
@@ -139,6 +145,8 @@ public class ExBlocks {
             oreThreshold = 0.79f;
             oreScale = 18f;
         }};
+
+        energyBall = new EnergyBall("energy-ball");
     }
 
     private static void loadStorage() {
@@ -318,7 +326,7 @@ public class ExBlocks {
         Log.info("Loading factories...");
 
         siliconPurifier = new ExGenericCrafter("silicon-purifier") {{
-            requirements(Category.crafting, with(ExItems.iron, 100, Items.silicon, 25, Items.lead, 100, Items.graphite, 50));
+            requirements(Category.crafting, with(ExItems.iron, 100, Items.silicon, 25, Items.lead, 100, Items.graphite, 50, ExItems.stone, 200));
 
             craftEffect = Fx.pulverizeMedium;
             outputItem = new ItemStack(ExItems.siliconBlock, 3);
@@ -333,7 +341,7 @@ public class ExBlocks {
         }};
 
         tubeMakingMachine = new ExGenericCrafter("tube-making-machine") {{
-            requirements(Category.crafting, with(Items.titanium, 150, ExItems.iron, 50, Items.lead, 100, Items.graphite, 50, ExItems.siliconBlock, 25));
+            requirements(Category.crafting, with(Items.titanium, 150, ExItems.iron, 50, Items.lead, 100, Items.graphite, 50, ExItems.siliconBlock, 25, ExItems.stone, 200));
 
             craftEffect = ExFx.laserBeam;
             outputItem = new ItemStack(ExItems.vacuumTube, 1);
@@ -350,7 +358,7 @@ public class ExBlocks {
         }};
 
         siliconRecombiner = new ExGenericCrafter("silicon-recombiner") {{
-            requirements(Category.crafting, with(ExItems.titaniumAlloy, 150, ExItems.iron, 50, ExItems.siliconBlock, 100, Items.graphite, 50, ExItems.vacuumTube, 25));
+            requirements(Category.crafting, with(ExItems.titaniumAlloy, 150, ExItems.iron, 50, ExItems.siliconBlock, 100, Items.graphite, 50, ExItems.vacuumTube, 25, ExItems.stone, 200));
 
             craftEffect = ExFx.laserBeam;
             outputItem = new ItemStack(ExItems.pureSilicon, 1);
@@ -367,7 +375,7 @@ public class ExBlocks {
         }};
 
         titaniumFurnace = new ExGenericCrafter("titanium-furnace") {{
-            requirements(Category.crafting, with(Items.titanium, 150, ExItems.iron, 50, ExItems.vacuumTube, 25));
+            requirements(Category.crafting, with(Items.titanium, 150, ExItems.iron, 50, ExItems.vacuumTube, 25, ExItems.stone, 200));
 
             craftEffect = ExFx.laserBeamR;
             outputItem = new ItemStack(ExItems.titaniumAlloy, 1);
@@ -378,11 +386,11 @@ public class ExBlocks {
             hasPower = true;
 
             consumePower(2.5f);
-            consumeItems(with(Items.copper, 2, Items.graphite, 1, Items.titanium, 3, ExItems.iron, 2, ExItems.siliconBlock, 1));
+            consumeItems(with(Items.copper, 2, Items.graphite, 1, Items.titanium, 3, ExItems.iron, 2));
         }};
 
         liquidHeliumCooler = new ExGenericCrafter("liquid-helium-cooler") {{
-            requirements(Category.crafting, with(Items.titanium, 150, ExItems.iron, 50, ExItems.vacuumTube, 25));
+            requirements(Category.crafting, with(Items.titanium, 150, ExItems.iron, 50, Items.metaglass, 25, ExItems.stone, 200));
 
             craftEffect = Fx.pulverizeMedium;
             outputLiquid = new LiquidStack(ExLiquids.liquidHelium, 0.01f);
@@ -395,7 +403,6 @@ public class ExBlocks {
             consumePower(1.2f);
             consumeLiquids(LiquidStack.with(ExLiquids.helium, 0.02f, Liquids.water, 0.01f));
         }};
-
 
         airCollector = new ExGenericCrafter("air-collector") {{
             requirements(Category.crafting, with(ExItems.iron, 90, Items.metaglass, 50, Items.silicon, 50, Items.graphite, 40));
@@ -438,6 +445,21 @@ public class ExBlocks {
             regionRotated1 = 3;
             outputLiquids = LiquidStack.with(ExLiquids.helium, 0.5f / 60, Liquids.hydrogen, 0.5f / 60);
             liquidOutputDirections = new int[]{1, 3};
+        }};
+
+        steelFurnace = new ExGenericCrafter("steel-furnace") {{
+            requirements(Category.crafting, with(Items.titanium, 150, ExItems.iron, 150, Items.copper, 500, ExItems.stone, 200));
+
+            craftEffect = Fx.pulverizeMedium;
+            outputItems = with(ExItems.steel, 8, Items.scrap, 1);
+            craftTime = 480f;
+            itemCapacity = 20;
+            size = 3;
+            hasItems = true;
+            hasPower = true;
+
+            consumePower(2f);
+            consumeItems(with(ExItems.iron, 8, Items.coal, 1));
         }};
     }
 
@@ -2517,10 +2539,6 @@ public class ExBlocks {
             update = true;
 
             buildType = () -> new ExWallBuild() {
-                {
-                    update = true;
-                }
-
                 private float time = 0f;
                 private int id = 0;
 
@@ -2555,14 +2573,10 @@ public class ExBlocks {
             update = true;
 
             buildType = () -> new ExWallBuild() {
-                {
-                    update = true;
-                }
-
                 @Override
                 public void updateTile() {
                     for (Tile t : Vars.world.tiles) {
-                        if (Objects.equals(t.team(), team) || Objects.equals(t.team(), Team.derelict)) {
+                        if (Objects.equals(t.team(), team) || Objects.equals(t.team(), Team.derelict) || t.block() instanceof CoreBlock) {
                             continue;
                         }
                         t.setBlock(Blocks.air, Team.derelict, 0);

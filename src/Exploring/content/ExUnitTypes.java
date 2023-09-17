@@ -1,6 +1,6 @@
 package Exploring.content;
 
-//import mindustry.annotations.Annotations.*;
+import annotations.src.main.java.mindustry.annotations.Annotations.*;
 import mindustry.ai.types.BuilderAI;
 import mindustry.content.Fx;
 import mindustry.entities.bullet.BasicBulletType;
@@ -9,7 +9,7 @@ import mindustry.type.UnitType;
 import mindustry.type.Weapon;
 
 public class ExUnitTypes {
-    public static /*@EntityDef(value = {Unitc.class}, legacy = true)*/ UnitType exAlpha;
+    public static @EntityDef(value = {Unitc.class}, legacy = true) UnitType exAlpha;
 
     public static void load() {
         exAlpha = new UnitType("ex-alpha"){{
