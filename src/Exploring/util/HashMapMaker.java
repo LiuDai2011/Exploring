@@ -1,4 +1,4 @@
-package Exploring.tool;
+package Exploring.util;
 
 import java.util.HashMap;
 

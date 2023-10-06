@@ -1,7 +1,7 @@
 package Exploring;
 
-import Exploring.tool.Pair;
-import Exploring.tool.Tuple;
+import Exploring.util.Pair;
+import Exploring.util.Tuple;
 import mindustry.type.Item;
 import mindustry.type.ItemStack;
 import mindustry.type.Liquid;

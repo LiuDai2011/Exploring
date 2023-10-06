@@ -1,7 +1,6 @@
 package Exploring.content;
 
-import Exploring.tool.Pair;
-import Exploring.tool.Tuple;
+import Exploring.type.laser.TestLaserBlock;
 import Exploring.world.blocks.*;
 import Exploring.world.blocks.distribution.*;
 import Exploring.world.blocks.drills.ExAttributeCrafter;
@@ -35,7 +34,6 @@ import mindustry.entities.pattern.ShootAlternate;
 import mindustry.entities.pattern.ShootBarrel;
 import mindustry.entities.pattern.ShootSpread;
 import mindustry.game.Team;
-import mindustry.gen.Building;
 import mindustry.gen.Bullet;
 import mindustry.gen.Sounds;
 import mindustry.graphics.CacheLayer;
@@ -46,7 +44,6 @@ import mindustry.type.Category;
 import mindustry.type.ItemStack;
 import mindustry.type.LiquidStack;
 import mindustry.world.Block;
-import mindustry.world.Build;
 import mindustry.world.Tile;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.OreBlock;
@@ -59,6 +56,8 @@ import mindustry.world.meta.*;
 
 import java.util.Objects;
 
+import static mindustry.Vars.tilesize;
+import static mindustry.type.ItemStack.empty;
 import static mindustry.type.ItemStack.with;
 
 public class ExBlocks {
@@ -67,7 +66,7 @@ public class ExBlocks {
 
             liquidHelium,
 
-    oreIron, oreSilicon,
+    oreIron, oreSilicon, stone,
 
     exCoreShard, exContainer, exVault, subspaceStorageLinker,
 
@@ -113,6 +112,9 @@ public class ExBlocks {
         loadEffect();
         loadTurret();
         loadCaiDan();
+        loadTest();
+
+        Log.info("End loading blocks.");
     }
 
     private static void loadEnv() {
@@ -147,6 +149,13 @@ public class ExBlocks {
         }};
 
         energyBall = new EnergyBall("energy-ball");
+
+        stone = new OreBlock("stone", ExItems.stone){
+            @Override
+            public boolean isOverlay() {
+                return false;
+            }
+        };
     }
 
     private static void loadStorage() {
@@ -157,7 +166,7 @@ public class ExBlocks {
             alwaysUnlocked = true;
 
             isFirstTier = true;
-            unitType = UnitTypes.alpha;
+            unitType = ExUnitTypes.exAlpha;
             health = 1100;
             itemCapacity = 4000;
             size = 3;
@@ -2064,7 +2073,7 @@ public class ExBlocks {
 
                             homingDelay = 1f;
                             homingRange = 6000f;
-                            homingPower = 0.081f;
+                            homingPower = 0.0005f;
                         }
 
                         @Override
@@ -2115,8 +2124,12 @@ public class ExBlocks {
                             speed = 23f;
                             width = 1f;
                             height = 64f;
-                            lifetime = 1000f;
-                            ammoMultiplier = 1000;
+                            lifetime = 100f;
+                            ammoMultiplier = 10;
+
+                            shootEffect = Fx.none;
+                            despawnEffect = Fx.none;
+                            hitEffect = Fx.none;
                         }
 
                         @Override
@@ -2130,7 +2143,7 @@ public class ExBlocks {
                                     x2 = b.x + 26f * Mathf.sinDeg(r),
                                     y2 = b.y - 26f * Mathf.cosDeg(r);
 
-                            Drawf.line(Color.valueOf("ceeaf4"), x1, y1, x2, y2);
+                            Drawf.line(Color.valueOf("ceeaf4").a((b.lifetime - b.time) / b.lifetime), x1, y1, x2, y2);
 
                             Draw.reset();
                         }
@@ -2139,8 +2152,8 @@ public class ExBlocks {
 
             range = 254f;
 
-            maxAmmo = 4000;
-            ammoPerShot = 6;
+            maxAmmo = 40;
+            ammoPerShot = 3;
             rotateSpeed = 1000f;
             reload = 1f;
             ammoUseEffect = Fx.casing3Double;
@@ -2159,32 +2172,29 @@ public class ExBlocks {
             buildType = () -> new ExItemTurretBuild() {
                 @Override
                 protected void shoot(BulletType type) {
-                    for (int i = 0; i < 5; i++) {
-                        float
-                                offsetX = Mathf.random(xOffsetMin, xOffsetMax),
-                                bulletX = x + Angles.trnsx(rotation - 90, offsetX, offsetY),
-                                bulletY = y + Angles.trnsy(rotation - 90, offsetX, offsetY);
+                    float
+                            offsetX = Mathf.random(xOffsetMin, xOffsetMax),
+                            bulletX = x + Angles.trnsx(rotation - 90, offsetX, offsetY),
+                            bulletY = y + Angles.trnsy(rotation - 90, offsetX, offsetY);
 
-                        if (shoot.firstShotDelay > 0) {
-                            chargeSound.at(bulletX, bulletY, Mathf.random(soundPitchMin, soundPitchMax));
-                            type.chargeEffect.at(bulletX, bulletY, rotation);
+                    if (shoot.firstShotDelay > 0) {
+                        chargeSound.at(bulletX, bulletY, Mathf.random(soundPitchMin, soundPitchMax));
+                    }
+
+                    shoot.shoot(barrelCounter, (xOffset, yOffset, angle, delay, mover) -> {
+                        queuedBullets++;
+                        if (delay > 0f) {
+                            Time.run(delay, () -> bullet(type, xOffset, yOffset, angle, mover));
+                        } else {
+                            bullet(type, xOffset, yOffset, angle, mover);
                         }
+                    }, () -> barrelCounter++);
 
-                        shoot.shoot(barrelCounter, (xOffset, yOffset, angle, delay, mover) -> {
-                            queuedBullets++;
-                            if (delay > 0f) {
-                                Time.run(delay, () -> bullet(type, xOffset, yOffset, angle, mover));
-                            } else {
-                                bullet(type, xOffset, yOffset, angle, mover);
-                            }
-                        }, () -> barrelCounter++);
+                    if (consumeAmmoOnce) {
+                        try {
+                            useAmmo();
+                        } catch (IllegalStateException ignored) {
 
-                        if (consumeAmmoOnce) {
-                            try {
-                                useAmmo();
-                            } catch (IllegalStateException ignored) {
-
-                            }
                         }
                     }
                 }
@@ -2540,13 +2550,13 @@ public class ExBlocks {
 
             buildType = () -> new ExWallBuild() {
                 private float time = 0f;
-                private int id = 0;
+                private int id = 1;
 
                 @Override
                 public void updateTile() {
                     time += delta();
                     if (time >= 10f) {
-                        if (id < 10) {
+                        if (id <= 10) {
                             for (int i = 0; i < 8; i++) {
                                 var pos = new Point2(tile.x, tile.y);
                                 var vel = Geometry.d8(i);
@@ -2584,6 +2594,28 @@ public class ExBlocks {
                     kill();
                 }
             };
+        }};
+    }
+
+    private static void loadTest() {
+        new TestLaserBlock("test-laser-block") {{
+            requirements(Category.power, with(Items.copper, 1));
+            drawDisabled = false;
+            envEnabled |= Env.space;
+            allowDiagonal = false;
+            underBullets = true;
+            drawArrow = true;
+            rotate = true;
+            health = 100;
+            laserP = 0.1f;
+        }};
+        new TestLaserBlock("test-laser-block1") {{
+            requirements(Category.power, with(Items.copper, 1));
+            drawDisabled = false;
+            envEnabled |= Env.space;
+            allowDiagonal = false;
+            underBullets = true;
+            health = 100;
         }};
     }
 }

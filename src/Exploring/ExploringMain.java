@@ -15,6 +15,11 @@ public class ExploringMain extends Mod {
      TODO: molecularWeight
      TODO: Unit
      TODO: 研究中心
+     TODO: Logic
+     TODO: Liquids
+     TODO: Formula
+     TODO: Laser
+     TODO: ...
     */
 
     public static final String MOD_NAME = "exploring";

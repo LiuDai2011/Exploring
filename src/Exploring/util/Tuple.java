@@ -1,4 +1,4 @@
-package Exploring.tool;
+package Exploring.util;
 
 public class Tuple<K, V, V2> {
     private K key;
