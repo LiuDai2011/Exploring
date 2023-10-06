@@ -93,9 +93,11 @@ public class LaserModule extends BlockModule {
                 }
             } while (dis <= out.get(i).length);
         }
+
+        laser = 0f;
     }
 
     public void clear() {
-
+        out.clear();
     }
 }
