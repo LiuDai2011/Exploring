@@ -150,7 +150,7 @@ public class ExBlocks {
 
         energyBall = new EnergyBall("energy-ball");
 
-        stone = new OreBlock("stone", ExItems.stone){
+        stone = new OreBlock("ore-stone", ExItems.stone){
             @Override
             public boolean isOverlay() {
                 return false;

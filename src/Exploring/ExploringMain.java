@@ -19,6 +19,7 @@ public class ExploringMain extends Mod {
      TODO: Liquids
      TODO: Formula
      TODO: Laser
+     TODO: Dyson Sphere
      TODO: ...
     */
 
