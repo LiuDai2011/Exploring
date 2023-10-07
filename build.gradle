@@ -62,7 +62,7 @@ task jarAndroid{
 }
 
 jar{
-    duplicatesStrategy = 'fail';
+    duplicatesStrategy = 'exclude'
     archiveFileName = "${project.archivesBaseName}Desktop.jar"
 
     from{
