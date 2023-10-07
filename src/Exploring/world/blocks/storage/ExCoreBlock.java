@@ -4,7 +4,9 @@ import Exploring.content.ExBlocks;
 import arc.Core;
 import arc.graphics.Color;
 import mindustry.Vars;
+import mindustry.content.Blocks;
 import mindustry.ui.Bar;
+import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.storage.CoreBlock;
 
@@ -33,7 +35,7 @@ public class ExCoreBlock extends CoreBlock {
             super.updateTile();
             if (!set) {
                 for (Tile t : Vars.world.tiles) {
-                    if (t.floor().name != "stone" || (t.block().isStatic()) || t.drop() == null)
+                    if (t.floor().localizedName == Blocks.stone.localizedName && t.drop() == null)
                         t.setFloor(ExBlocks.stone.asFloor());
                 }
                 set = true;

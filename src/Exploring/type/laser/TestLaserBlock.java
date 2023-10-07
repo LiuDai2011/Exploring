@@ -1,6 +1,7 @@
 package Exploring.type.laser;
 
 import Exploring.graphics.ExPal;
+import Exploring.util.Pair;
 import arc.Core;
 import arc.graphics.Color;
 import arc.math.geom.Geometry;
@@ -39,7 +40,7 @@ public class TestLaserBlock extends LaserBlock {
         private boolean setup = false;
 
         {
-            laser.laserStorageCapacity = 100f;
+            laser.laserStorageCapacity = 200f;
             laser.storage = true;
         }
 
@@ -51,6 +52,15 @@ public class TestLaserBlock extends LaserBlock {
             if (!setup && laserP != 0) {
                 setup = true;
                 laser.addOut(new Laser(new Point2(tile.x, tile.y), Geometry.d4(rotation()), 0.5f, 5f));
+            }
+        }
+
+        @Override
+        public void draw() {
+            super.draw();
+
+            for (int i = 0; i < laser.out.size; i++) {
+                laser.draw(i, new Pair<>(x, y), size, rotation());
             }
         }
     }

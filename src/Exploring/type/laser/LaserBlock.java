@@ -12,4 +12,9 @@ public class LaserBlock extends Block {
         update = true;
         group = BlockGroup.power;
     }
+
+    @Override
+    public boolean canReplace(Block other) {
+        return !(other instanceof LaserBlock);
+    }
 }
