@@ -62,6 +62,7 @@ task jarAndroid{
 }
 
 jar{
+    duplicatesStrategy = 'fail';
     archiveFileName = "${project.archivesBaseName}Desktop.jar"
 
     from{
