@@ -2617,5 +2617,29 @@ public class ExBlocks {
             underBullets = true;
             health = 100;
         }};
+        new TestLaserBlock("test-laser-block1") {{
+            requirements(Category.crafting, with(Items.copper, 1));
+            drawDisabled = false;
+            envEnabled |= Env.space;
+            allowDiagonal = false;
+            underBullets = true;
+            drawArrow = true;
+            health = 100;
+
+            buildType = () -> new TestLaserBuild(){
+                @Override
+                public void update() {
+                    super.update();
+
+                    if (laser.laserStorage >= 23.5f) {
+                        laser.laserStorage -= 23.5f;
+
+                        Point2 pos = new Point2(tile.x + Geometry.d4x(rotation()), tile.y + Geometry.d4y(rotation()));
+
+                        //TODO: crafting
+                    }
+                }
+            };
+        }};
     }
 }
