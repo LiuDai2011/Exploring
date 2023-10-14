@@ -21,6 +21,7 @@ import mindustry.graphics.Layer;
 import mindustry.world.Tile;
 import mindustry.world.modules.BlockModule;
 
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static mindustry.Vars.tilesize;
 
@@ -43,11 +44,33 @@ public class LaserModule extends BlockModule {
     @Override
     public void write(Writes write) {
         write.bool(storage);
+        write.f(laser);
+        write.f(laserStorage);
+        write.f(laserCapacity);
+        write.f(laserStorageCapacity);
+        write.i(out.size);
+        for (int i = 0; i < out.size; i++) {
+            write.i(out.get(i).start.x);
+            write.i(out.get(i).start.y);
+            write.i(out.get(i).getVelocity().x);
+            write.i(out.get(i).getVelocity().y);
+            write.f(out.get(i).amount);
+            write.f(out.get(i).length);
+        }
     }
 
     @Override
     public void read(Reads read) {
         storage = read.bool();
+        laser = read.f();
+        laserStorage = read.f();
+        laserCapacity = read.f();
+        laserStorageCapacity = read.f();
+
+        int size = read.i();
+        for (int i = 0; i < size; i++) {
+            out.add(new Laser(new Point2(read.i(), read.i()), new Point2(read.i(), read.i()), read.f(), read.f()));
+        }
     }
 
     public boolean addOut(Laser laser1) {
@@ -120,7 +143,7 @@ public class LaserModule extends BlockModule {
 
         Draw.z(Layer.power);
         Draw.color(ExPal.laser(min(out.get(id).amount * Time.delta, laserStorage)));
-        Draw.alpha(ExSettings.laserOpacity * 0.9f);
+        Draw.alpha(ExSettings.laserOpacity * max(0.2f, min(1f, max(min(out.get(id).amount * Time.delta, laserStorage) / 50f - 0.1f, 0.05f) / 50f)));
         float w = 0.4f + Mathf.absin(7f, 0.05f);
 
         boolean frag = false;

@@ -2,6 +2,8 @@ package Exploring.type.laser;
 
 import arc.math.Mathf;
 import arc.util.Time;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
 import mindustry.Vars;
 import mindustry.entities.Damage;
 import mindustry.entities.Effect;
@@ -79,5 +81,19 @@ public class LaserBuild extends Building {
             killed();
 
         laser.update();
+    }
+
+    @Override
+    public void read(Reads read) {
+        super.read(read);
+
+        laser.read(read);
+    }
+
+    @Override
+    public void write(Writes write) {
+        super.write(write);
+
+        laser.write(write);
     }
 }

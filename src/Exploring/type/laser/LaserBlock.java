@@ -15,6 +15,6 @@ public class LaserBlock extends Block {
 
     @Override
     public boolean canReplace(Block other) {
-        return !(other instanceof LaserBlock);
+        return !(other instanceof LaserBlock) && super.canReplace(other);
     }
 }

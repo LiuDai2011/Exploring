@@ -14,13 +14,13 @@ public class ExPal {
 
     public static Color laser(float laserAmount) {
         if (laserAmount <= 50f) {
-            return Color.red.cpy().a(max(laserAmount / 50f - 0.1f, 0.05f));
+            return Color.red.cpy();
         } else if (laserAmount <= 400f) {
             return Color.red.cpy().lerp(Color.yellow.cpy(), (laserAmount - 50f) / 350f);
         } else if (laserAmount <= 2000f) {
             return Color.yellow.cpy().lerp(laser.cpy(), (laserAmount - 400f) / 1600f);
         } else if (laserAmount <= 15000f) {
-            return laser.cpy().lerp(Color.white.cpy(), (laserAmount - 2000f) / 13000f);
+            return Color.blue.cpy().lerp(Color.white.cpy(), (laserAmount - 2000f) / 13000f);
         } else {
             return Color.white.cpy();
         }

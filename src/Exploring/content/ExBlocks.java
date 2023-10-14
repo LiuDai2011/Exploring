@@ -150,7 +150,7 @@ public class ExBlocks {
 
         energyBall = new EnergyBall("energy-ball");
 
-        stone = new OreBlock("ore-stone", ExItems.stone){
+        stone = new OreBlock("ore-stone", ExItems.stone) {
             @Override
             public boolean isOverlay() {
                 return false;
@@ -2541,39 +2541,57 @@ public class ExBlocks {
             };
         }};
 
-        RHN = new ExWall("RHN") {{
-            requirements(Category.defense, with(Items.copper, 1));
-            health = 800;
-            researchCostMultiplier = 0.1f;
-            envDisabled |= Env.scorching;
-            update = true;
+        RHN = new ExWall("RHN") {
+            {
+                requirements(Category.defense, with(Items.copper, 1));
+                health = 800;
+                researchCostMultiplier = 0.1f;
+                envDisabled |= Env.scorching;
+                update = true;
 
-            buildType = () -> new ExWallBuild() {
-                private float time = 0f;
-                private int id = 1;
+                buildType = () -> new ExWallBuild() {
+                    private float time = 0f;
+                    private int id = 1;
 
-                @Override
-                public void updateTile() {
-                    time += delta();
-                    if (time >= 10f) {
-                        if (id <= 10) {
-                            for (int i = 0; i < 8; i++) {
-                                var pos = new Point2(tile.x, tile.y);
-                                var vel = Geometry.d8(i);
-                                for (int j = 0; j <= id; j++) pos.add(vel);
-                                var t = Vars.world.tile(pos.x, pos.y);
-                                if (t != null && t.build == null)
-                                    t.setBlock(Blocks.air, team, 0);
+                    @Override
+                    public void updateTile() {
+                        time += delta();
+                        if (time >= 10f) {
+                            if (id <= 10) {
+                                for (int i = 0; i < 8; i++) {
+                                    var pos = new Point2(tile.x, tile.y);
+                                    var vel = Geometry.d8(i);
+                                    for (int j = 0; j < id; j++) pos.add(vel);
+                                    var t = Vars.world.tile(pos.x, pos.y);
+                                    if (t != null && t.build == null)
+                                        t.setBlock(Blocks.air, team, 0);
+                                }
+                            } else if (id >= 25) {
+                                killed();
                             }
-                        } else if (id >= 25) {
-                            kill();
+                            id++;
+                            time %= 10f;
                         }
-                        id++;
-                        time %= 10f;
+                    }
+                };
+            }
+
+            @Override
+            public void drawPlace(int x, int y, int rotation, boolean valid) {
+                super.drawPlace(x, y, rotation, valid);
+
+                for (int id = 0; id < 11; id++) {
+                    for (int i = 0; i < 8; i++) {
+                        var pos = new Point2(x, y);
+                        var vel = Geometry.d8(i);
+                        for (int j = 0; j <= id; j++) pos.add(vel);
+                        var t = Vars.world.tile(pos.x, pos.y);
+                        if (t != null && t.build == null && t.block() != Blocks.air)
+                            Drawf.square(t.worldx(), t.worldy(), t.block().size * tilesize / 2f + 2.5f, 0f);
                     }
                 }
-            };
-        }};
+            }
+        };
 
         LiuDai = new ExWall("Author-Liu-Dai") {{
             requirements(Category.defense, with(Items.copper, 1));
@@ -2617,7 +2635,7 @@ public class ExBlocks {
             underBullets = true;
             health = 100;
         }};
-        new TestLaserBlock("test-laser-block1") {{
+        new TestLaserBlock("test-laser-block2") {{
             requirements(Category.crafting, with(Items.copper, 1));
             drawDisabled = false;
             envEnabled |= Env.space;
@@ -2625,8 +2643,10 @@ public class ExBlocks {
             underBullets = true;
             drawArrow = true;
             health = 100;
+            hasItems = true;
+            itemCapacity = 200;
 
-            buildType = () -> new TestLaserBuild(){
+            buildType = () -> new TestLaserBuild() {
                 @Override
                 public void update() {
                     super.update();
@@ -2634,9 +2654,9 @@ public class ExBlocks {
                     if (laser.laserStorage >= 23.5f) {
                         laser.laserStorage -= 23.5f;
 
-                        Point2 pos = new Point2(tile.x + Geometry.d4x(rotation()), tile.y + Geometry.d4y(rotation()));
+                        items.add(Items.copper, 1);
 
-                        //TODO: crafting
+                        dump(Items.copper);
                     }
                 }
             };
