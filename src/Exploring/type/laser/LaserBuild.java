@@ -15,6 +15,7 @@ import mindustry.world.Tile;
 import java.util.Iterator;
 
 public class LaserBuild extends Building {
+    public boolean hasLaser;
     public LaserModule laser = new LaserModule();
 
     @Override

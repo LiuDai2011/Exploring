@@ -40,6 +40,7 @@ public class TestLaserBlock extends LaserBlock {
         private boolean setup = false;
 
         {
+            hasLaser = true;
             laser.laserStorageCapacity = 200f;
             laser.storage = true;
         }

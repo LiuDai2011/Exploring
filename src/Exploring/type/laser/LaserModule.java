@@ -2,9 +2,10 @@ package Exploring.type.laser;
 
 import Exploring.ExSettings;
 import Exploring.graphics.ExPal;
+import Exploring.type.Anyp;
+import Exploring.type.Booleanp;
 import Exploring.util.Pair;
 import arc.Core;
-import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
@@ -15,7 +16,7 @@ import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import mindustry.Vars;
-import mindustry.core.Renderer;
+import mindustry.gen.Building;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.world.Tile;
@@ -26,6 +27,8 @@ import static java.lang.Math.min;
 import static mindustry.Vars.tilesize;
 
 public class LaserModule extends BlockModule {
+    public static Booleanp<Building> defaultLp = (Building building) -> building instanceof LaserBuild;
+    public static Anyp<Building, LaserBuild> defaultCp = (Building building) -> (LaserBuild) building;
 
     public float laser = 0.0f;
     public float laserCapacity = 0.0f;
@@ -92,6 +95,14 @@ public class LaserModule extends BlockModule {
     }
 
     public void update() {
+        update(defaultLp, defaultCp);
+    }
+
+    public void draw(int id, Pair<Float, Float> pos, int size, int rotation) {
+        draw(id, pos, size, rotation, defaultLp, defaultCp);
+    }
+
+    public void update(Booleanp<Building> p, Anyp<Building, LaserBuild> cp) {
         if (!storage) {
             laserStorageCapacity = laserCapacity;
             laserStorage = laser;
@@ -119,9 +130,9 @@ public class LaserModule extends BlockModule {
                 if (tile == null)
                     break;
 
-                if (tile.block() instanceof LaserBlock && ((LaserBlock) tile.block()).hasLaser) {
+                if (p.get(tile.build) && cp.get(tile.build).hasLaser) {
                     if (laserStorage >= out.get(i).amount * Time.delta) {
-                        ((LaserBuild) tile.build).laser.add(out.get(i).amount * Time.delta);
+                        cp.get(tile.build).laser.add(out.get(i).amount * Time.delta);
                         laserStorage -= out.get(i).amount * Time.delta;
                         frag = false;
                     }
@@ -137,7 +148,7 @@ public class LaserModule extends BlockModule {
         laser = 0f;
     }
 
-    public void draw(int id, Pair<Float, Float> pos, int size, int rotation) {
+    public void draw(int id, Pair<Float, Float> pos, int size, int rotation, Booleanp<Building> p, Anyp<Building, LaserBuild> cp) {
         TextureRegion laserR = Core.atlas.find("laser");
         TextureRegion laserEnd = Core.atlas.find("laser-end");
 
@@ -165,7 +176,7 @@ public class LaserModule extends BlockModule {
             if (tile == null)
                 break;
 
-            if (tile.block() instanceof LaserBlock && ((LaserBlock) tile.block()).hasLaser) {
+            if (p.get(tile.build) && cp.get(tile.build).hasLaser) {
                 frag = true;
 
                 Point2 point = Geometry.d4(rotation);

@@ -32,8 +32,8 @@ public class ExploringMain extends Mod {
             QQ Group: 901923295
             QQ Group2: 915241460
                         
-            QQ群：901923295
-            QQ开发群： 915241460
+            QQ\u7fa4\uff1a901923295
+            QQ\u5f00\u53d1\u7fa4\uff1a 915241460
             """;
 
     public static Mods.LoadedMod MOD;

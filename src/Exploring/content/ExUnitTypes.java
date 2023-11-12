@@ -4,21 +4,22 @@ import arc.graphics.Color;
 import arc.util.Log;
 import mindustry.ai.types.BuilderAI;
 import mindustry.content.Fx;
+import mindustry.content.Items;
 import mindustry.content.StatusEffects;
-import mindustry.content.UnitTypes;
 import mindustry.entities.abilities.*;
-import mindustry.entities.bullet.BasicBulletType;
-import mindustry.entities.bullet.MissileBulletType;
-import mindustry.entities.bullet.PointBulletType;
+import mindustry.entities.bullet.*;
+import mindustry.entities.effect.MultiEffect;
+import mindustry.entities.pattern.ShootSpread;
 import mindustry.gen.Bullet;
 import mindustry.gen.Sounds;
 import mindustry.gen.UnitEntity;
 import mindustry.graphics.Pal;
 import mindustry.type.UnitType;
 import mindustry.type.Weapon;
+import mindustry.type.ammo.ItemAmmoType;
 
 public class ExUnitTypes {
-    public static UnitType exAlpha, author;
+    public static UnitType exAlpha, author, shiyanBOSS;
 
     public static void load() {
         Log.info("Loading units...");
@@ -46,9 +47,9 @@ public class ExUnitTypes {
             alwaysUnlocked = true;
 
             weapons.add(new Weapon("ex-small-basic-weapon") {{
-                reload = 17.0f;
+                reload = 17;
                 x = 2.75f;
-                y = 1.0f;
+                y = 1;
                 top = false;
                 ejectEffect = Fx.casing1;
 
@@ -89,7 +90,7 @@ public class ExUnitTypes {
             weapons.add(new Weapon("EX_BOOM!") {{
                 reload = 1f;
                 x = 2.75f;
-                y = 1.0f;
+                y = 1;
                 top = false;
                 ejectEffect = Fx.casing1;
 
@@ -210,6 +211,63 @@ public class ExUnitTypes {
 
             //abilities.add(new UnitSpawnAbility(UnitTypes.reign, 300f, 0, 0));
             //abilities.add(new UnitSpawnAbility(UnitTypes.corvus, 300f, 0, 0));
+        }};
+
+        shiyanBOSS = new UnitType("BOSS"){{
+            constructor = UnitEntity::create;
+            drag = 0.1f;
+            speed = 0.18f;
+            hitSize = 58;
+            health = 7820000;
+            armor = 13;
+            lightRadius = 290;
+            rotateSpeed = 0.9f;
+            drownTimeMultiplier = 3;
+            legCount = 8;
+            legMoveSpace = 0.8f;
+            legPairOffset = 3;
+            legLength = 75;
+            legExtension = -20;
+            legBaseOffset = 8;
+            stepShake = 1.9f;
+            legLengthScl = 0.93f;
+            rippleScale = 3;
+            legSpeed = 0.17f;
+            ammoType = new ItemAmmoType(Items.graphite, 8);
+            legSplashDamage = 80;
+            legSplashRange = 60;
+            hovering = true;
+            shadowElevation = 0.95f;
+            groundLayer = 75;
+
+            weapons.add(new Weapon("main"){{
+                x = 0;
+                y = 0;
+                shootY = 22;
+                mirror = false;
+                reload = 210;
+                shake = 10;
+                recoil = 10;
+                rotateSpeed = 0.5f;
+                shootSound = Sounds.artillery;
+                rotate = true;
+                shadow = 30;
+                rotationLimit = 80;
+                bullet = new LaserBulletType(140) {{
+                    colors = new Color[]{Pal.lancerLaser.cpy().a(0.4f), Pal.lancerLaser, Color.white};
+                    chargeEffect = new MultiEffect(Fx.lancerLaserCharge, Fx.lancerLaserChargeBegin);
+
+                    buildingDamageMultiplier = 0.25f;
+                    hitEffect = Fx.hitLancer;
+                    hitSize = 4;
+                    lifetime = 16f;
+                    drawSize = 400f;
+                    collidesAir = false;
+                    length = 173f;
+                    ammoMultiplier = 1f;
+                    pierceCap = 4;
+                }};
+            }});
         }};
     }
 }

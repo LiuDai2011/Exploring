@@ -3,6 +3,7 @@ package Exploring.world.blocks.storage;
 import Exploring.content.ExBlocks;
 import arc.Core;
 import arc.graphics.Color;
+import arc.util.Time;
 import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.ui.Bar;
@@ -28,17 +29,18 @@ public class ExCoreBlock extends CoreBlock {
     }
 
     public class ExCoreBuild extends CoreBuild {
-        public boolean set = false;
+        public float timer = 2300f;
 
         @Override
         public void updateTile() {
             super.updateTile();
-            if (!set) {
+            timer += Time.delta;
+            if (timer >= 2000f) {
                 for (Tile t : Vars.world.tiles) {
-                    if (t.floor().localizedName == Blocks.stone.localizedName && t.drop() == null)
+                    if (t.floor().name == Blocks.stone.name && t.overlay() != Blocks.spawn && t.drop() == null)
                         t.setFloor(ExBlocks.stone.asFloor());
                 }
-                set = true;
+                timer %= 2000f;
             }
         }
     }

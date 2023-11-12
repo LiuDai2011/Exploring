@@ -57,7 +57,6 @@ import mindustry.world.meta.*;
 import java.util.Objects;
 
 import static mindustry.Vars.tilesize;
-import static mindustry.type.ItemStack.empty;
 import static mindustry.type.ItemStack.with;
 
 public class ExBlocks {
@@ -71,7 +70,7 @@ public class ExBlocks {
     exCoreShard, exContainer, exVault, subspaceStorageLinker,
 
     exCopperWall, exCopperWallLarge, exTitaniumWall, exTitaniumWallLarge, exPlastaniumWall, exPlastaniumWallLarge, exThoriumWall, exThoriumWallLarge, exDoor, exDoorLarge,
-            exPhaseWall, exPhaseWallLarge, exSurgeWall, exSurgeWallLarge, leadWall, leadWallLarge, testWall,
+            exPhaseWall, exPhaseWallLarge, exSurgeWall, exSurgeWallLarge, leadWall, leadWallLarge, ironWall, ironWallLarge, testWall,
 
     siliconPurifier, tubeMakingMachine, siliconRecombiner, titaniumFurnace, liquidHeliumCooler, steelFurnace,
 
@@ -97,7 +96,9 @@ public class ExBlocks {
 
     anuken, nianNianYouYu, guiY, RA2, No9527, lyr, oneGamma, zzcQAQ, paoTaiS, AarnMAX, RHN,
 
-    chiRe, jianBian, boLuo, LiuDai, titaniumAlloyCopperWall;
+    chiRe, jianBian, boLuo, LiuDai, titaniumAlloyCopperWall,
+
+    test;
 
     public static void load() {
         Log.info("Loading blocks...");
@@ -327,6 +328,13 @@ public class ExBlocks {
             requirements(Category.defense, ItemStack.mult(leadWall.requirements, 4));
             health = 20000 * wallHealthMultiplier;
             size = 2;
+            envDisabled |= Env.scorching;
+        }};
+
+        ironWall = new RusttableWall("iron-wall") {{
+            requirements(Category.defense, with(ExItems.iron, 6));
+            health = 125 * wallHealthMultiplier;
+            researchCostMultiplier = 0.1f;
             envDisabled |= Env.scorching;
         }};
     }
