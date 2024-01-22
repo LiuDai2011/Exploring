@@ -5,9 +5,9 @@ import arc.math.geom.Point2;
 
 public class Laser {
     public Point2 start = new Point2();
-    private Point2 velocity = new Point2(0, 1);
     public float amount = 0.0f;
     public float length = 0.0f;
+    private Point2 velocity = new Point2(0, 1);
 
 
     public Laser() {

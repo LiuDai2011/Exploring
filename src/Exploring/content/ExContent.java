@@ -30,14 +30,18 @@ public class ExContent {
 
     public static CacheLayer LHLayer;
 
-    static Texture loadTex(String name, Cons<Texture> modifier){
+    public static void loadPriority(){
+        new ExContent()/*.loadBeforeContent()*/.load();
+    }
+
+    Texture loadTex(String name, Cons<Texture> modifier) {
         Texture tex = new Texture(ExploringMain.MOD.root.child("textures").child(name + (name.endsWith(".png") ? "" : ".png")));
         modifier.get(tex);
 
         return tex;
     }
 
-    public static void load() {
+    public void load() {
         ExStatusEffects.load();
         ExLiquids.load();
         ExItems.load();
@@ -66,31 +70,33 @@ public class ExContent {
                                 LiquidStack.empty
                         ),
                         new Pair<>(
-                            1,
-                            hashMapMaker.make(
-                                    Liquids.water,
-                                    new Pair<>(
-                                            0.3f,
-                                            1.3333f
-                                    )
-                            )
+                                1,
+                                hashMapMaker.make(
+                                        Liquids.water,
+                                        new Pair<>(
+                                                0.3f,
+                                                1.3333f
+                                        )
+                                )
                         )
                 )
         );
     }
 
-    private static void loadTexture() {
-         LHNoise = loadTex("LH-noise", t -> {
+    private void loadTexture() {
+        LHNoise = loadTex("LH-noise", t -> {
             t.setFilter(Texture.TextureFilter.linear);
             t.setWrap(Texture.TextureWrap.repeat);
         });
     }
 
-    public static void loadBeforeContent() {
+    public ExContent loadBeforeContent() {
         loadTexture();
 
         CacheLayer.add(
                 LHLayer = new CacheLayer.ShaderLayer(ExShaders.liquidHelium)
         );
+
+        return this;
     }
 }

@@ -6,6 +6,7 @@ import arc.Core;
 import arc.graphics.Color;
 import arc.math.geom.Geometry;
 import arc.math.geom.Point2;
+import arc.math.geom.Vec2;
 import arc.util.Time;
 import mindustry.ui.Bar;
 
@@ -61,7 +62,7 @@ public class TestLaserBlock extends LaserBlock {
             super.draw();
 
             for (int i = 0; i < laser.out.size; i++) {
-                laser.draw(i, new Pair<>(x, y), size, rotation());
+                laser.draw(i, new Vec2(x, y), size, rotation());
             }
         }
     }

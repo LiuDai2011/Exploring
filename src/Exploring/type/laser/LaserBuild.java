@@ -14,7 +14,7 @@ import mindustry.world.Tile;
 
 import java.util.Iterator;
 
-public class LaserBuild extends Building {
+public class LaserBuild extends Building implements Laserc {
     public boolean hasLaser;
     public LaserModule laser = new LaserModule();
 
@@ -26,11 +26,11 @@ public class LaserBuild extends Building {
         Item item;
         int amount;
         if (this.block.hasItems) {
-            for(Iterator var4 = Vars.content.items().iterator(); var4.hasNext(); power += item.charge * Mathf.pow((float)amount, 1.1f) * 150.0f) {
-                item = (Item)var4.next();
+            for (Iterator var4 = Vars.content.items().iterator(); var4.hasNext(); power += item.charge * Mathf.pow((float) amount, 1.1f) * 150.0f) {
+                item = (Item) var4.next();
                 amount = Math.min(this.items.get(item), this.explosionItemCap());
-                explosiveness += item.explosiveness * (float)amount;
-                flammability += item.flammability * (float)amount;
+                explosiveness += item.explosiveness * (float) amount;
+                flammability += item.flammability * (float) amount;
             }
         }
 
@@ -51,9 +51,9 @@ public class LaserBuild extends Building {
             this.liquids.each((liquid, amountx) -> {
                 float splash = Mathf.clamp(amountx / 4.0f, 0.0f, 10.0f);
 
-                for(int i = 0; (float)i < Mathf.clamp(amountx / 5.0f, 0.0f, 30.0f); ++i) {
-                    Time.run((float)i / 2.0f, () -> {
-                        Tile other = Vars.world.tileWorld(this.x + (float)Mathf.range(this.block.size * 8 / 2), this.y + (float)Mathf.range(this.block.size * 8 / 2));
+                for (int i = 0; (float) i < Mathf.clamp(amountx / 5.0f, 0.0f, 30.0f); ++i) {
+                    Time.run((float) i / 2.0f, () -> {
+                        Tile other = Vars.world.tileWorld(this.x + (float) Mathf.range(this.block.size * 8 / 2), this.y + (float) Mathf.range(this.block.size * 8 / 2));
                         if (other != null) {
                             Puddles.deposit(other, liquid, splash);
                         }
@@ -66,7 +66,7 @@ public class LaserBuild extends Building {
 
         power += laser.laserStorage * 47.5f;
 
-        Damage.dynamicExplosion(this.x, this.y, flammability, explosiveness * 3.5f, power, (float)(8 * this.block.size) / 2.0f, Vars.state.rules.damageExplosions, this.block.destroyEffect);
+        Damage.dynamicExplosion(this.x, this.y, flammability, explosiveness * 3.5f, power, (float) (8 * this.block.size) / 2.0f, Vars.state.rules.damageExplosions, this.block.destroyEffect);
         if (this.block.createRubble && !this.floor().solid && !this.floor().isLiquid) {
             Effect.rubble(this.x, this.y, this.block.size);
         }
@@ -79,7 +79,7 @@ public class LaserBuild extends Building {
         super.update();
 
         if (laser.overload() >= 1f)
-            killed();
+            kill();
 
         laser.update();
     }
@@ -96,5 +96,15 @@ public class LaserBuild extends Building {
         super.write(write);
 
         laser.write(write);
+    }
+
+    @Override
+    public boolean hasLaser() {
+        return hasLaser;
+    }
+
+    @Override
+    public LaserModule module() {
+        return laser;
     }
 }

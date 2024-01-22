@@ -11,13 +11,13 @@ import mindustry.graphics.g3d.HexSkyMesh;
 import mindustry.graphics.g3d.MultiMesh;
 import mindustry.type.Planet;
 
-public class ExPlanets{
+public class ExPlanets {
     public static Planet
 
-    exSerpulo;
+            exSerpulo;
 
     public static void load() {
-        exSerpulo = new Planet("ex-serpulo", Planets.sun, 1f, 3){{
+        exSerpulo = new Planet("ex-serpulo", Planets.sun, 1f, 3) {{
             generator = new ExSerpuloPlanetGenerator();
             meshLoader = () -> new HexMesh(this, 6);
             cloudMeshLoader = () -> new MultiMesh(

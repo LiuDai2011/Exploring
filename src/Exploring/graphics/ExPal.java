@@ -2,8 +2,6 @@ package Exploring.graphics;
 
 import arc.graphics.Color;
 
-import static java.lang.Math.max;
-
 public class ExPal {
     public static Color laser = Color.valueOf("ceeaf4");
     public static Color author = Color.valueOf("ceeaf4");

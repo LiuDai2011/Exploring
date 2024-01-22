@@ -1,22 +1,29 @@
 package Exploring.content;
 
+import Exploring.entities.bullets.AnnihilateBulletType;
+import Exploring.entities.units.BossEntity;
 import arc.graphics.Color;
+import arc.scene.ui.layout.Table;
 import arc.util.Log;
 import mindustry.ai.types.BuilderAI;
 import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.content.StatusEffects;
+import mindustry.ctype.ContentType;
 import mindustry.entities.abilities.*;
-import mindustry.entities.bullet.*;
-import mindustry.entities.effect.MultiEffect;
-import mindustry.entities.pattern.ShootSpread;
+import mindustry.entities.bullet.BasicBulletType;
+import mindustry.entities.bullet.BulletType;
+import mindustry.entities.bullet.MissileBulletType;
+import mindustry.entities.bullet.PointBulletType;
 import mindustry.gen.Bullet;
 import mindustry.gen.Sounds;
+import mindustry.gen.Unit;
 import mindustry.gen.UnitEntity;
 import mindustry.graphics.Pal;
 import mindustry.type.UnitType;
 import mindustry.type.Weapon;
 import mindustry.type.ammo.ItemAmmoType;
+import mindustry.ui.Bar;
 
 public class ExUnitTypes {
     public static UnitType exAlpha, author, shiyanBOSS;
@@ -104,7 +111,7 @@ public class ExUnitTypes {
                 }};
             }});
 
-            weapons.add(new Weapon("miss!-weapon"){{
+            weapons.add(new Weapon("miss!-weapon") {{
                 top = false;
                 y = -2.5f;
                 x = 3.75f;
@@ -116,7 +123,7 @@ public class ExUnitTypes {
                 inaccuracy = 15f;
                 alternate = true;
 
-                bullet = new MissileBulletType(4f, 12){{
+                bullet = new MissileBulletType(4f, 12) {{
                     homingPower = 0.08f;
                     weaveMag = 4;
                     weaveScale = 4;
@@ -135,7 +142,7 @@ public class ExUnitTypes {
                 }};
             }});
 
-            weapons.add(new Weapon("a-ba-a-ba-weapon"){{
+            weapons.add(new Weapon("a-ba-a-ba-weapon") {{
                 top = false;
                 y = -2.5f;
                 x = 3.75f;
@@ -195,7 +202,7 @@ public class ExUnitTypes {
                 };
             }});
 
-            abilities.add(new EnergyFieldAbility(35f, 1f, 8000f){{
+            abilities.add(new EnergyFieldAbility(35f, 1f, 8000f) {{
                 statusDuration = 60f * 6f;
                 maxTargets = 99;
                 healPercent = 30f;
@@ -213,61 +220,155 @@ public class ExUnitTypes {
             //abilities.add(new UnitSpawnAbility(UnitTypes.corvus, 300f, 0, 0));
         }};
 
-        shiyanBOSS = new UnitType("BOSS"){{
-            constructor = UnitEntity::create;
-            drag = 0.1f;
-            speed = 0.18f;
-            hitSize = 58;
-            health = 7820000;
-            armor = 13;
-            lightRadius = 290;
-            rotateSpeed = 0.9f;
-            drownTimeMultiplier = 3;
-            legCount = 8;
-            legMoveSpace = 0.8f;
-            legPairOffset = 3;
-            legLength = 75;
-            legExtension = -20;
-            legBaseOffset = 8;
-            stepShake = 1.9f;
-            legLengthScl = 0.93f;
-            rippleScale = 3;
-            legSpeed = 0.17f;
-            ammoType = new ItemAmmoType(Items.graphite, 8);
-            legSplashDamage = 80;
-            legSplashRange = 60;
-            hovering = true;
-            shadowElevation = 0.95f;
-            groundLayer = 75;
+        shiyanBOSS = new UnitType("BOSS") {
+            {
+                constructor = BossEntity::create;
+                drag = 0.1f;
+                speed = 0.18f;
+                hitSize = 58;
+                health = 7820000;
+                armor = 13;
+                lightRadius = 290;
+                rotateSpeed = 0.9f;
+                drownTimeMultiplier = 3;
+                legCount = 8;
+                legMoveSpace = 0.8f;
+                legPairOffset = 3;
+                legLength = 75;
+                legExtension = -20;
+                legBaseOffset = 8;
+                stepShake = 1.9f;
+                legLengthScl = 0.93f;
+                rippleScale = 3;
+                legSpeed = 0.17f;
+                ammoType = new ItemAmmoType(Items.surgeAlloy, 8);
+                legSplashDamage = 80;
+                legSplashRange = 60;
+                hovering = true;
+                shadowElevation = 0.95f;
+                groundLayer = 75;
 
-            weapons.add(new Weapon("main"){{
-                x = 0;
-                y = 0;
-                shootY = 22;
-                mirror = false;
-                reload = 210;
-                shake = 10;
-                recoil = 10;
-                rotateSpeed = 0.5f;
-                shootSound = Sounds.artillery;
-                rotate = true;
-                shadow = 30;
-                rotationLimit = 80;
-                bullet = new LaserBulletType(140) {{
-                    colors = new Color[]{Pal.lancerLaser.cpy().a(0.4f), Pal.lancerLaser, Color.white};
-                    chargeEffect = new MultiEffect(Fx.lancerLaserCharge, Fx.lancerLaserChargeBegin);
+                weapons.add(new Weapon("main") {{
+                    x = 0;
+                    y = 0;
+                    shootY = 22;
+                    mirror = false;
+                    reload = 210;
+                    reload = 10;
+                    shake = 10;
+                    recoil = 10;
+                    rotateSpeed = 0.5f;
+                    shootSound = Sounds.artillery;
+                    rotate = true;
+                    shadow = 30;
+                    rotationLimit = 80;
+                    bullet = new AnnihilateBulletType(100f);
+                }});
+                weapons.add(new Weapon("1122") {{
+                    x = 0;
+                    y = 0;
+                    shootY = 22;
+                    mirror = false;
+                    reload = 1;
+                    shake = 10;
+                    recoil = 10;
+                    rotateSpeed = 0.5f;
+                    shootSound = Sounds.artillery;
+                    rotate = true;
+                    shadow = 30;
+                    rotationLimit = 80;
+                    bullet = new BulletType() {
+                        {
+                            trailLength = 15;
+                            trailChance = 1f;
 
-                    buildingDamageMultiplier = 0.25f;
-                    hitEffect = Fx.hitLancer;
-                    hitSize = 4;
-                    lifetime = 16f;
-                    drawSize = 400f;
-                    collidesAir = false;
-                    length = 173f;
-                    ammoMultiplier = 1f;
-                    pierceCap = 4;
-                }};
-            }});
-        }};
+                            damage = 598;
+                            speed = 9;
+
+                            fragBullets = 3;
+                            fragBullet = new BulletType() {{
+                                trailColor = Color.blue;
+                                trailLength = 15;
+                                trailChance = 0f;
+
+                                damage = 1908;
+                                speed = 9;
+
+                                fragBullets = 2;
+                                fragBullet = new BulletType() {{
+                                    trailColor = Color.blue;
+                                    trailLength = 15;
+                                    trailChance = 0f;
+
+                                    damage = 19008;
+                                    speed = 9;
+
+                                    fragBullets = 1;
+                                    fragBullet = new BulletType() {{
+                                        trailColor = Color.blue;
+                                        trailLength = 15;
+                                        trailChance = 0f;
+
+                                        damage = 19008;
+                                        speed = 9;
+
+                                        fragBullets = 2;
+                                        fragBullet = new BulletType() {{
+                                            trailColor = Color.blue;
+                                            trailLength = 15;
+                                            trailChance = 0f;
+
+                                            damage = 19008;
+                                            speed = 9;
+                                        }};
+                                    }};
+                                }};
+                            }};
+                        }
+                    };
+                }});//*/
+            }
+
+            @Override
+            public void display(Unit unit, Table table) {
+                super.display(unit, table);
+
+                table.table(t -> {
+                    t.defaults().growX().height(20f).pad(4);
+
+                    t.add(new Bar(
+                            () -> {
+                                if (unit instanceof BossEntity boss) {
+                                    return ((Float) (boss.damaged)).toString();
+                                }
+                                return "0";
+                            },
+                            () -> Color.red,
+                            () -> {
+                                if (unit instanceof BossEntity boss) {
+                                    return (boss.damaged - 895.9f) / 1119949.5f;
+                                }
+                                return 0;
+                            }
+                            //(damaged-895.80432757354754)/1119949.4547419411
+                    ));
+                    t.add(new Bar(
+                            () -> {
+                                if (unit instanceof BossEntity boss) {
+                                    return ((Float) (boss.damageMulti)).toString();
+                                }
+                                return "0";
+                            },
+                            () -> Color.red,
+                            () -> {
+                                if (unit instanceof BossEntity boss) {
+                                    return boss.damageMulti;
+                                }
+                                return 0;
+                            }
+                    ));
+                }).growX();
+            }
+        };
     }
 }

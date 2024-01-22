@@ -8,7 +8,6 @@ import arc.math.Rand;
 import arc.math.geom.Vec2;
 import mindustry.entities.Effect;
 import mindustry.graphics.Drawf;
-import mindustry.graphics.Pal;
 
 import static arc.graphics.g2d.Draw.alpha;
 import static arc.graphics.g2d.Draw.color;

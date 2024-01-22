@@ -1,8 +1,8 @@
 package Exploring.util;
 
 public class Pair<K, V> {
-    private K key;
-    private V value;
+    private final K key;
+    private final V value;
 
     public Pair(K k, V v) {
         key = k;

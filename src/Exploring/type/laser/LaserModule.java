@@ -11,6 +11,7 @@ import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 import arc.math.geom.Geometry;
 import arc.math.geom.Point2;
+import arc.math.geom.Vec2;
 import arc.struct.Seq;
 import arc.util.Time;
 import arc.util.io.Reads;
@@ -95,14 +96,6 @@ public class LaserModule extends BlockModule {
     }
 
     public void update() {
-        update(defaultLp, defaultCp);
-    }
-
-    public void draw(int id, Pair<Float, Float> pos, int size, int rotation) {
-        draw(id, pos, size, rotation, defaultLp, defaultCp);
-    }
-
-    public void update(Booleanp<Building> p, Anyp<Building, LaserBuild> cp) {
         if (!storage) {
             laserStorageCapacity = laserCapacity;
             laserStorage = laser;
@@ -130,14 +123,23 @@ public class LaserModule extends BlockModule {
                 if (tile == null)
                     break;
 
-                if (p.get(tile.build) && cp.get(tile.build).hasLaser) {
-                    if (laserStorage >= out.get(i).amount * Time.delta) {
-                        cp.get(tile.build).laser.add(out.get(i).amount * Time.delta);
-                        laserStorage -= out.get(i).amount * Time.delta;
-                        frag = false;
-                    }
-                    break;
+                if (tile.build instanceof Laserc laserc && laserc.hasLaser()) {
+                        if (laserStorage >= out.get(i).amount * Time.delta) {
+                            laserc.module().add(out.get(i).amount * Time.delta);
+                            laserStorage -= out.get(i).amount * Time.delta;
+                            frag = false;
+                        }
+                        break;
                 }
+//
+//                if (p.get(tile.build) && cp.get(tile.build).hasLaser) {
+//                    if (laserStorage >= out.get(i).amount * Time.delta) {
+//                        cp.get(tile.build).laser.add(out.get(i).amount * Time.delta);
+//                        laserStorage -= out.get(i).amount * Time.delta;
+//                        frag = false;
+//                    }
+//                    break;
+//                }
             }
 
             if (frag)
@@ -148,7 +150,7 @@ public class LaserModule extends BlockModule {
         laser = 0f;
     }
 
-    public void draw(int id, Pair<Float, Float> pos, int size, int rotation, Booleanp<Building> p, Anyp<Building, LaserBuild> cp) {
+    public void draw(int id, Vec2 pos, int size, int rotation) {
         TextureRegion laserR = Core.atlas.find("laser");
         TextureRegion laserEnd = Core.atlas.find("laser-end");
 
@@ -176,15 +178,25 @@ public class LaserModule extends BlockModule {
             if (tile == null)
                 break;
 
-            if (p.get(tile.build) && cp.get(tile.build).hasLaser) {
+            if (tile.build instanceof Laserc laserc && laserc.hasLaser()) {
                 frag = true;
 
                 Point2 point = Geometry.d4(rotation);
                 float poff = tilesize / 2f;
-                Drawf.laser(laserR, laserEnd, pos.getKey() + poff * size * point.x, pos.getValue() + poff * size * point.y, tile.worldx() - poff * point.x, tile.worldy() - poff * point.y, w);
+                Drawf.laser(laserR, laserEnd, pos.x + poff * size * point.x, pos.y + poff * size * point.y, tile.worldx() - poff * point.x, tile.worldy() - poff * point.y, w);
 
                 break;
             }
+//
+//            if (p.get(tile.build) && cp.get(tile.build).hasLaser) {
+//                frag = true;
+//
+//                Point2 point = Geometry.d4(rotation);
+//                float poff = tilesize / 2f;
+//                Drawf.laser(laserR, laserEnd, pos.getKey() + poff * size * point.x, pos.getValue() + poff * size * point.y, tile.worldx() - poff * point.x, tile.worldy() - poff * point.y, w);
+//
+//                break;
+//            }
         }
 
         if (!frag) {
@@ -197,7 +209,7 @@ public class LaserModule extends BlockModule {
             Tile tile = Vars.world.tile(added.cpy().add(posS).x, added.cpy().add(posS).y);
             Point2 point = Geometry.d4(rotation);
             float poff = tilesize / 2f;
-            Drawf.laser(laserR, laserEnd, pos.getKey() + poff * size * point.x, pos.getValue() + poff * size * point.y, tile.worldx() - poff * point.x, tile.worldy() - poff * point.y, w);
+            Drawf.laser(laserR, laserEnd, pos.x + poff * size * point.x, pos.y + poff * size * point.y, tile.worldx() - poff * point.x, tile.worldy() - poff * point.y, w);
         }
     }
 

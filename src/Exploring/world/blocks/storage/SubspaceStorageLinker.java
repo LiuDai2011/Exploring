@@ -134,9 +134,9 @@ public class SubspaceStorageLinker extends ExStorageBlock {
         public void updateTile() {
             super.updateTile();
             timer += Time.delta;
-            if(hadPower()) effectTimer += Time.delta;
+            if (hadPower()) effectTimer += Time.delta;
             else effectTimer = 0f;
-            if(timer * 60 < runEffect.lifetime) return ;
+            if (timer * 60 < runEffect.lifetime) return;
             if (wasVisible && hadPower() && effectTimer >= runEffect.lifetime) {
                 runEffect.at(x, y);
             }
@@ -175,12 +175,12 @@ public class SubspaceStorageLinker extends ExStorageBlock {
 
         @Override
         public int getMaximumAccepted(Item item) {
-            return linkedCore != null ? linkedCore.getMaximumAccepted(item) : hadPower()?itemCapacity:0;
+            return linkedCore != null ? linkedCore.getMaximumAccepted(item) : hadPower() ? itemCapacity : 0;
         }
 
         @Override
         public int explosionItemCap() {
-            return linkedCore != null ? Math.min(itemCapacity / 60, 6) : hadPower()?itemCapacity:0;
+            return linkedCore != null ? Math.min(itemCapacity / 60, 6) : hadPower() ? itemCapacity : 0;
         }
 
         @Override

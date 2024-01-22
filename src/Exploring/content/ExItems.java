@@ -1,14 +1,13 @@
 package Exploring.content;
 
 import arc.graphics.Color;
-import mindustry.content.Items;
 import mindustry.type.Item;
 
 public class ExItems {
     public static Item
             titaniumAlloy, siliconBlock, iron, vacuumTube, pureSilicon, chip, quantumChip, battery, fullBattery,
 
-            stone, steel;
+    stone, steel;
 
     public static void load() {
         titaniumAlloy = new Item("titanium-alloy", Color.valueOf("9eb0eb")) {{
@@ -25,27 +24,27 @@ public class ExItems {
         vacuumTube = new Item("vacuum-tube", Color.valueOf("f3f3f3")) {{
             cost = 1f;
         }};
-        pureSilicon = new Item("pure-silicon", Color.valueOf("44ff44")){{
+        pureSilicon = new Item("pure-silicon", Color.valueOf("44ff44")) {{
             cost = 1f;
         }};
-        chip = new Item("chip", Color.valueOf("bbd0e2")){{
+        chip = new Item("chip", Color.valueOf("bbd0e2")) {{
             cost = 1f;
         }};
-        quantumChip = new Item("quantum-chip", Color.valueOf("dbefff")){{
+        quantumChip = new Item("quantum-chip", Color.valueOf("dbefff")) {{
             cost = 1f;
         }};
-        battery = new Item("battery", Color.valueOf("ffe257")){{
+        battery = new Item("battery", Color.valueOf("ffe257")) {{
             cost = 1f;
         }};
-        fullBattery = new Item("full-battery", Color.valueOf("ffee9e")){{
+        fullBattery = new Item("full-battery", Color.valueOf("ffee9e")) {{
             cost = 1f;
             charge = 5f;
         }};
-        stone = new Item("stone", Color.valueOf("54545b")){{
+        stone = new Item("stone", Color.valueOf("54545b")) {{
             cost = 1f;
             hardness = 2;
         }};
-        steel = new Item("steel", Color.valueOf("71c4e1")){{
+        steel = new Item("steel", Color.valueOf("71c4e1")) {{
             cost = 1f;
         }};
     }

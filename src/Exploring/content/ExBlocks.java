@@ -98,7 +98,7 @@ public class ExBlocks {
 
     chiRe, jianBian, boLuo, LiuDai, titaniumAlloyCopperWall,
 
-    test;
+    test, a, b;
 
     public static void load() {
         Log.info("Loading blocks...");
@@ -2575,7 +2575,7 @@ public class ExBlocks {
                                         t.setBlock(Blocks.air, team, 0);
                                 }
                             } else if (id >= 25) {
-                                killed();
+                                kill();
                             }
                             id++;
                             time %= 10f;
@@ -2666,6 +2666,108 @@ public class ExBlocks {
 
                         dump(Items.copper);
                     }
+                }
+            };
+        }};
+
+        a = new ExWall("a") {{
+            requirements(Category.power, with(Items.copper, 1));
+            health = 100000;
+            update = true;
+
+            buildType = () -> new WallBuild() {
+                float timer = 0f;
+                int timeri = 0;
+                boolean upd = true;
+
+                @Override
+                public void update() {
+                    super.update();
+                    timer += Time.delta;
+                    while (timer >= 1f) {
+                        timeri++;
+                        timer -= 1f;
+                    }
+                    if (timeri > 65) {
+                        tile.setBlock(Blocks.air, Team.derelict);
+                    } else if (timeri > 10 && upd) {
+                        for (int i = 0; i < 4; i++) {
+                            updDir(i, team);
+                        }
+                        upd = false;
+                    }
+                }
+
+                private void updDir(int i, Team team1) {
+                    Tile tile1 = Vars.world.tile(Geometry.d4x(i) + tile.x, Geometry.d4y(i) + tile.y);
+                    if (tile1 == null) return;
+                    if (tile1.build != null) {
+                        if (tile1.build.team != team1) {
+                            tile.setBlock(b, team1);
+                        }
+                    } else if (tile1.block() == Blocks.air) {
+                        tile1.setBlock(a, team1);
+                    }
+                }
+            };
+        }};
+        b = new ExWall("b") {{
+            requirements(Category.power, with(Items.copper, 1));
+            health = 100000;
+            update = true;
+
+            buildType = () -> new WallBuild() {
+                float timer = 0f;
+                int timeri = 0;
+                int exp = 0;
+                int lvl = 1;
+
+                @Override
+                public void update() {
+                    super.update();
+                    timer += Time.delta;
+                    while (timer >= 1f) {
+                        timeri++;
+                        timer -= 1f;
+                    }
+                    while (timeri > 10) {
+                        boolean tmp = false;
+                        for (int i = 0; i < 4; i++) {
+                            tmp |= updDir(i, team);
+                        }
+                        if (!tmp) {
+                            tile.setBlock(Blocks.air, Team.derelict);
+                            return;
+                        }
+                        timeri -= 10;
+                    }
+                }
+
+                private boolean updDir(int i, Team team1) {
+                    Tile tile1 = Vars.world.tile(Geometry.d4x(i) + tile.x, Geometry.d4y(i) + tile.y);
+                    if (tile1 == null) return false;
+                    if (tile1.build != null) {
+                        if (tile1.build.team != team1) {
+                            exp++;
+                            tile1.build.damage(damage_());
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                private void updLvl() {
+                    lvl = (int) Mathf.log(2.1f, exp);
+                    lvl++;
+                }
+
+                private int damage_() {
+                    updLvl();
+                    int tmp = 1;
+                    for (int i = 0; i < lvl; i++) {
+                        tmp *= 5;
+                    }
+                    return tmp;
                 }
             };
         }};

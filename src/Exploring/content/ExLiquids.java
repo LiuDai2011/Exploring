@@ -7,12 +7,12 @@ public class ExLiquids {
     public static Liquid helium, liquidHelium, sandboxLiquid;
 
     public static void load() {
-        helium = new Liquid("helium", Color.white){{
+        helium = new Liquid("helium", Color.white) {{
             lightColor = Color.white;
             gasColor = Color.white;
         }};
 
-        liquidHelium = new Liquid("liquid-helium", Color.white){{
+        liquidHelium = new Liquid("liquid-helium", Color.white) {{
             heatCapacity = 5.5f;
             temperature = 0.003f;
             effect = ExStatusEffects.freeze;
@@ -22,7 +22,7 @@ public class ExLiquids {
             gasColor = Color.valueOf("c1e8f5");
         }};
 
-        sandboxLiquid = new Liquid("sandbox-liquid", Color.white){{
+        sandboxLiquid = new Liquid("sandbox-liquid", Color.white) {{
             heatCapacity = 2147483647f;
             temperature = 0f;
             effect = ExStatusEffects.freeze;

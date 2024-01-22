@@ -2,7 +2,6 @@ package Exploring.world.blocks.turrets;
 
 import arc.Core;
 import arc.graphics.Color;
-import mindustry.entities.bullet.BulletType;
 import mindustry.ui.Bar;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 

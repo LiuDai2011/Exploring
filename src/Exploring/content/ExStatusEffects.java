@@ -7,7 +7,7 @@ public class ExStatusEffects {
     public static StatusEffect freeze;
 
     public static void load() {
-        freeze = new StatusEffect("freeze"){{
+        freeze = new StatusEffect("freeze") {{
             color = Pal.lightishGray;
             healthMultiplier = 0.5f;
             speedMultiplier = 0f;

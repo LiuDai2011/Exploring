@@ -1,6 +1,7 @@
 package Exploring;
 
 import Exploring.content.ExContent;
+import Exploring.graphics.ExShaders;
 import Exploring.ui.AboutModDialog;
 import arc.util.Log;
 import mindustry.Vars;
@@ -20,6 +21,7 @@ public class ExploringMain extends Mod {
      TODO: Formula
      TODO: Laser
      TODO: Dyson Sphere
+     TODO: BOSS S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S!
      TODO: ...
     */
 
@@ -42,14 +44,14 @@ public class ExploringMain extends Mod {
 //        EntityMapping.nameMap.put(name());
 //    }
 
-    public static String name(String name){
-        return MOD_NAME + "-" + name;
-    }
-    
     public ExploringMain() {
         Log.info("Loaded Exploring constructor.");
 
         AboutModDialog.show();
+    }
+
+    public static String name(String name) {
+        return MOD_NAME + "-" + name;
     }
 
     @Override
@@ -61,10 +63,8 @@ public class ExploringMain extends Mod {
         MOD = Vars.mods.getMod(getClass());
 
 //        ExShaders.init();
-//
-//        ExContent.loadBeforeContent();
 
-        ExContent.load();
+        ExContent.loadPriority();
 
         ExContent.loadVars();
     }

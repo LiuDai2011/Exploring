@@ -1,9 +1,9 @@
 package Exploring.util;
 
 public class Tuple<K, V, V2> {
-    private K key;
-    private V value;
-    private V2 value2;
+    private final K key;
+    private final V value;
+    private final V2 value2;
 
     public Tuple(K k, V v, V2 v2) {
         key = k;

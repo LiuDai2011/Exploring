@@ -38,9 +38,8 @@ public class RusttableWall extends ExWall {
 
     public class RusttableWallBuild extends ExWallBuild {
         public float progress = 0f;
-        private float timer = 0f;
         public float maxHealthc = 0f;
-
+        private float timer = 0f;
 
         @Override
         public void update() {
@@ -52,7 +51,7 @@ public class RusttableWall extends ExWall {
             }
 
             if (progress >= 40f)
-                killed();
+                kill();
 
             maxHealthc = maxHealths[(int) (progress / 5f)];
         }
