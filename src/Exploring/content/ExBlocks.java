@@ -98,7 +98,7 @@ public class ExBlocks {
 
     chiRe, jianBian, boLuo, LiuDai, titaniumAlloyCopperWall,
 
-    test, a, b;
+    test, a, b, c;
 
     public static void load() {
         Log.info("Loading blocks...");
@@ -2689,7 +2689,7 @@ public class ExBlocks {
                         timer -= 1f;
                     }
                     if (timeri > 65) {
-                        tile.setBlock(Blocks.air, Team.derelict);
+                        tile.setBlock(c, team);
                     } else if (timeri > 10 && upd) {
                         for (int i = 0; i < 4; i++) {
                             updDir(i, team);
@@ -2736,7 +2736,7 @@ public class ExBlocks {
                             tmp |= updDir(i, team);
                         }
                         if (!tmp) {
-                            tile.setBlock(Blocks.air, Team.derelict);
+                            tile.setBlock(c, team);
                             return;
                         }
                         timeri -= 10;
@@ -2770,6 +2770,13 @@ public class ExBlocks {
                     return tmp;
                 }
             };
+        }};
+        c = new ExWall("c") {{
+            requirements(Category.power, with(Items.copper, 1));
+            health = 100;
+            insulated = true;
+            absorbLasers = true;
+            schematicPriority = 10;
         }};
     }
 }
