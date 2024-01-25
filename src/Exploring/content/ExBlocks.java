@@ -89,6 +89,7 @@ public class ExBlocks {
     sandboxOverdriveDome,
 
     test_pt, exDuo, exScatter, exScorch, exHail, exArc, exWave, exLancer, exSwarmer, exSalvo, exFuse, exRipple, exCyclone, exForeshadow, exSpectre, exMeltdown, exSegment, exParallax, exTsunami,
+    exT2Cyclone,
 
     eternity, ballLightning, ion,
 
@@ -2016,6 +2017,144 @@ public class ExBlocks {
             scaledHealth = 200;
             coolant = consumeCoolant(0.5f);
             consumePower(17f);
+        }};
+
+        exT2Cyclone = new ExItemTurret("ex-t2-cyclone") {{
+            requirements(Category.turret, with(Items.copper, 200, Items.titanium, 125, Items.plastanium, 80));
+            ammo(
+                    Items.metaglass, new FlakBulletType(4f, 8) {{
+                        ammoMultiplier = 2f;
+                        shootEffect = Fx.shootSmall;
+                        reloadMultiplier = 0.8f;
+                        width = 6f;
+                        height = 8f;
+                        hitEffect = Fx.flakExplosion;
+                        splashDamage = 60f;
+                        splashDamageRadius = 35f;
+                        fragBullet = new BasicBulletType(3f, 16, "bullet") {{
+                            width = 5f;
+                            height = 12f;
+                            shrinkY = 1f;
+                            lifetime = 30f;
+                            backColor = Pal.gray;
+                            frontColor = Color.white;
+                            despawnEffect = Fx.none;
+                        }};
+                        fragBullets = 4;
+                        collidesGround = true;
+                    }},
+                    Items.blastCompound, new FlakBulletType(4f, 12) {{
+                        shootEffect = Fx.shootBig;
+                        ammoMultiplier = 5f;
+                        splashDamage = 60f;
+                        splashDamageRadius = 75f;
+                        collidesGround = true;
+
+                        status = StatusEffects.blasted;
+                        statusDuration = 60f;
+                        explodeRange = 40f;
+                    }},
+                    Items.plastanium, new FlakBulletType(4f, 10) {{
+                        ammoMultiplier = 4f;
+                        splashDamageRadius = 50f;
+                        splashDamage = 45f;
+                        fragBullet = new BasicBulletType(2.5f, 16, "bullet") {{
+                            width = 10f;
+                            height = 12f;
+                            shrinkY = 1f;
+                            lifetime = 25f;
+                            backColor = Pal.plastaniumBack;
+                            frontColor = Pal.plastaniumFront;
+                            despawnEffect = Fx.none;
+                        }};
+                        fragBullets = 6;
+                        hitEffect = Fx.plasticExplosion;
+                        frontColor = Pal.plastaniumFront;
+                        backColor = Pal.plastaniumBack;
+                        shootEffect = Fx.shootBig;
+                        collidesGround = true;
+                    }},
+                    Items.surgeAlloy, new FlakBulletType(4.5f, 19) {{
+                        ammoMultiplier = 5f;
+                        splashDamage = 65f * 1.9f;
+                        splashDamageRadius = 46f;
+                        lightning = 2;
+                        lightningLength = 7;
+                        shootEffect = Fx.shootBig;
+                        collidesGround = true;
+                    }},
+                    ExItems.titaniumAlloy, new FlakBulletType(7f, 25) {{
+                        ammoMultiplier = 5f;
+                        splashDamage = 80f * 2.2f;
+                        splashDamageRadius = 46f;
+                        lightning = 3;
+                        lightningLength = 8;
+                        shootEffect = Fx.shootBig;
+                        collidesGround = true;
+                    }},
+                    ExItems.fullBattery, new FlakBulletType(2.5f, 30) {{
+                        ammoMultiplier = 5f;
+                        splashDamage = 80f * 2.2f;
+                        splashDamageRadius = 13f;
+                        lightning = 15;
+                        lightningLength = 18;
+                        shootEffect = Fx.shootBig;
+                        collidesGround = true;
+
+                        fragBullets = 15;
+                        fragBullet = new LightningBulletType() {{
+                            damage = 25;
+                            lightningLength = 15;
+                            ammoMultiplier = 1f;
+
+                            lightningType = new BulletType(0.0001f, 0f) {{
+                                lifetime = Fx.lightning.lifetime;
+                                hitEffect = Fx.hitLancer;
+                                despawnEffect = Fx.none;
+                                status = StatusEffects.blasted;
+                                statusDuration = 35f;
+                                hittable = false;
+                                lightColor = Color.white;
+                            }};
+                        }};
+                    }}
+            );
+            shootY = 10f;
+
+            shoot = new ShootBarrel() {{
+                barrels = new float[]{
+                        0f, 5f, 0f,
+                        3.5f, 4f, 0f,
+                        -3.5f, 4f, 0f,
+                };
+            }};
+
+            recoils = 3;
+            drawer = new DrawTurret() {{
+                for (int i = 3; i > 0; i--) {
+                    int f = i;
+                    parts.add(new RegionPart("-barrel-" + i) {{
+                        progress = PartProgress.recoil;
+                        recoilIndex = f - 1;
+                        under = true;
+                        moveY = -2f;
+                    }});
+                }
+            }};
+
+            reload = 7f;
+            range = 290f;
+            size = 4;
+            recoil = 1.8f;
+            recoilTime = 12;
+            rotateSpeed = 15f;
+            inaccuracy = 15f;
+            shootCone = 30f;
+            shootSound = Sounds.shootSnap;
+            coolant = consumeCoolant(0.25f);
+
+            scaledHealth = 145;
+            limitRange();
         }};
 
         ballLightning = new ExItemTurret("ball-lightning") {{
