@@ -2,9 +2,6 @@ package Exploring.type.laser;
 
 import Exploring.ExSettings;
 import Exploring.graphics.ExPal;
-import Exploring.type.Anyp;
-import Exploring.type.Booleanp;
-import Exploring.util.Pair;
 import arc.Core;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
@@ -17,7 +14,6 @@ import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import mindustry.Vars;
-import mindustry.gen.Building;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.world.Tile;
@@ -28,9 +24,6 @@ import static java.lang.Math.min;
 import static mindustry.Vars.tilesize;
 
 public class LaserModule extends BlockModule {
-    public static Booleanp<Building> defaultLp = (Building building) -> building instanceof LaserBuild;
-    public static Anyp<Building, LaserBuild> defaultCp = (Building building) -> (LaserBuild) building;
-
     public float laser = 0.0f;
     public float laserCapacity = 0.0f;
 

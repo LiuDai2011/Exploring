@@ -1,5 +1,9 @@
 package Exploring.content;
 
+import Exploring.entities.bullets.StarFireBulletType;
+import Exploring.graphics.ExPal;
+import Exploring.io.Loader;
+import Exploring.maps.planet.ExSerpuloPlanetGenerator;
 import Exploring.type.laser.TestLaserBlock;
 import Exploring.world.blocks.*;
 import Exploring.world.blocks.distribution.*;
@@ -43,6 +47,7 @@ import mindustry.graphics.Pal;
 import mindustry.type.Category;
 import mindustry.type.ItemStack;
 import mindustry.type.LiquidStack;
+import mindustry.type.Planet;
 import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.environment.Floor;
@@ -89,9 +94,9 @@ public class ExBlocks {
     sandboxOverdriveDome,
 
     test_pt, exDuo, exScatter, exScorch, exHail, exArc, exWave, exLancer, exSwarmer, exSalvo, exFuse, exRipple, exCyclone, exForeshadow, exSpectre, exMeltdown, exSegment, exParallax, exTsunami,
-    exT2Cyclone,
+            exT2Cyclone,
 
-    eternity, ballLightning, ion,
+    eternity, ballLightning, ion, starFire,
 
     energyBall,
 
@@ -99,7 +104,7 @@ public class ExBlocks {
 
     chiRe, jianBian, boLuo, LiuDai, titaniumAlloyCopperWall,
 
-    test, a, b, c;
+    test, a, b, c, genPlanet;
 
     public static void load() {
         Log.info("Loading blocks...");
@@ -2020,7 +2025,7 @@ public class ExBlocks {
         }};
 
         exT2Cyclone = new ExItemTurret("ex-t2-cyclone") {{
-            requirements(Category.turret, with(Items.copper, 200, Items.titanium, 125, Items.plastanium, 80));
+            requirements(Category.turret, with(Items.copper, 450, Items.titanium, 250, Items.plastanium, 200, Items.surgeAlloy, 150));
             ammo(
                     Items.metaglass, new FlakBulletType(4f, 8) {{
                         ammoMultiplier = 2f;
@@ -2917,5 +2922,186 @@ public class ExBlocks {
             absorbLasers = true;
             schematicPriority = 10;
         }};
+        genPlanet = new ExWall("gen-planet") {{
+            requirements(Category.power, with(Items.copper, 1));
+            health = 1;
+            update = true;
+            buildType = () -> new ExWallBuild() {
+                @Override
+                public void update() {
+                    super.update();
+                    new Loader(Planet.class).load(
+                            obj -> {
+                                if (obj instanceof Planet planet) {
+                                    planet.generator = new ExSerpuloPlanetGenerator();
+                                    planet.launchCapacityMultiplier = 0.5f;
+                                    planet.sectorSeed = 2;
+                                    planet.allowWaves = true;
+                                    planet.allowWaveSimulation = true;
+                                    planet.allowSectorInvasion = true;
+                                    planet.allowLaunchSchematics = true;
+                                    planet.enemyCoreSpawnReplace = true;
+                                    planet.allowLaunchLoadout = true;
+                                    planet.prebuildBase = false;
+                                    planet.ruleSetter = r -> {
+                                        r.waveTeam = Team.crux;
+                                        r.placeRangeCheck = false;
+                                        r.showSpawns = false;
+                                    };
+                                    planet.atmosphereColor = planet.iconColor = ExPal.author;
+                                    planet.atmosphereRadIn = 0.02f;
+                                    planet.atmosphereRadOut = 0.3f;
+                                    planet.startSector = 15;
+                                    planet.alwaysUnlocked = true;
+                                    planet.landCloudColor = Pal.spore.cpy().a(0.5f);
+                                    planet.hiddenItems.addAll(Items.erekirItems).removeAll(Items.serpuloItems);
+                                    planet.load();
+                                }
+                            },
+                            new Class[]{String.class, Planet.class, float.class, int.class},
+                            "Steven", ExPlanets.exSerpulo, 0.9f, 3
+                    );
+                    tile.setBlock(Blocks.air, Team.derelict);
+                }
+            };
+        }};
+
+        starFire = new ExItemTurret("star-fire") {{
+            float brange = 600f;
+
+            requirements(Category.turret, with(Items.copper, 1000, Items.metaglass, 600, Items.surgeAlloy, 300, Items.plastanium, 200, Items.silicon, 600));
+            ammo(
+                    Items.copper, new PointBulletType() {{
+                        shootEffect = Fx.instShoot;
+                        hitEffect = Fx.instHit;
+                        smokeEffect = Fx.smokeCloud;
+                        trailEffect = Fx.instTrail;
+                        despawnEffect = Fx.instBomb;
+                        trailSpacing = 20f;
+                        damage = 1350;
+                        buildingDamageMultiplier = 0.2f;
+                        speed = brange;
+                        hitShake = 6f;
+                        ammoMultiplier = 1f;
+
+                        fragBullets = 6;
+                        fragBullet = new BasicBulletType() {
+                            {
+                                width = 14.5f;
+                                height = 14.5f;
+
+                                speed = 6f;
+                                lifetime = 300f;
+                                ammoMultiplier = 1;
+
+                                intervalDelay = 1f;
+                                intervalSpread = 300f;
+                                intervalBullets = 6;
+                                intervalBullet = new LightningBulletType() {{
+                                    damage = 150;
+                                    lightningLength = 8;
+                                    ammoMultiplier = 1f;
+
+                                    //for visual stats only.
+                                    buildingDamageMultiplier = 0.9f;
+
+                                    lightningType = new BulletType(0.0001f, 0f) {{
+                                        lifetime = Fx.lightning.lifetime;
+                                        hitEffect = Fx.hitLancer;
+                                        despawnEffect = Fx.none;
+                                        status = StatusEffects.blasted;
+                                        statusDuration = 10f;
+                                        hittable = false;
+                                        lightColor = Color.white;
+                                        buildingDamageMultiplier = 0.9f;
+                                    }};
+                                }};
+
+                                fragBullets = 5;
+                                fragBullet = new BulletType(0.0001f, 0f) {{
+                                    fragBullets = 15;
+                                    fragBullet = new LightningBulletType() {{
+                                        damage = 350;
+                                        lightningLength = 40;
+                                        ammoMultiplier = 1f;
+
+                                        lightningType = new BulletType(0.0001f, 0f) {{
+                                            lifetime = Fx.lightning.lifetime;
+                                            hitEffect = Fx.hitLancer;
+                                            despawnEffect = Fx.none;
+                                            status = StatusEffects.blasted;
+                                            statusDuration = 35f;
+                                            hittable = false;
+                                            lightColor = Color.white;
+                                        }};
+                                    }};
+                                }};
+
+                                damage = 850f;
+
+                                splashDamageRadius = 38f;
+                                splashDamage = 705f;
+
+                                homingDelay = 1f;
+                                homingRange = 6000f;
+                                homingPower = 0.0005f;
+                            }
+
+                            @Override
+                            public void draw(Bullet b) {
+                                Color c = Color.valueOf("cff2ff");
+
+                                Draw.color(c);
+                                Fill.circle(b.x, b.y, 2.5f);
+                                Fill.light(b.x, b.y, 50, 3.8f, 0, c, c);
+
+                                Draw.reset();
+                            }
+
+                            @Override
+                            public void createFrags(Bullet b, float x, float y) {
+                                super.createFrags(b, x, y);
+                                ((ExItemTurret) exT2Cyclone).ammoTypes.get(ExItems.fullBattery).create(b, x, y, b.rotation());
+                            }
+                        };
+                    }},
+                    Items.surgeAlloy, new PointBulletType() {{
+                        shootEffect = Fx.instShoot;
+                        hitEffect = Fx.instHit;
+                        smokeEffect = Fx.smokeCloud;
+                        trailEffect = Fx.instTrail;
+                        despawnEffect = Fx.instBomb;
+                        trailSpacing = 20f;
+                        damage = 1350;
+                        buildingDamageMultiplier = 0.2f;
+                        speed = brange;
+                        hitShake = 6f;
+                        ammoMultiplier = 1f;
+                    }}
+            );
+
+            maxAmmo = 40;
+            ammoPerShot = 5;
+            rotateSpeed = 2f;
+            reload = 200f;
+            ammoUseEffect = Fx.casing3Double;
+            recoil = 5f;
+            cooldownTime = reload;
+            shake = 4f;
+            size = 2;
+            shootCone = 2f;
+            shootSound = Sounds.railgun;
+            unitSort = UnitSorts.strongest;
+            envEnabled |= Env.space;
+            range = brange;
+
+            coolantMultiplier = 0.4f;
+            scaledHealth = 150;
+
+            coolant = consumeCoolant(1f);
+            consumePower(10f);
+        }};
     }
+
+    // Vars.state.rules.infiniteResources = true;Vars.content.each(e => {if(!(e instanceof UnlockableContent)) return;e.quietUnlock();});
 }

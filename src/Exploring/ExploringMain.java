@@ -1,7 +1,6 @@
 package Exploring;
 
 import Exploring.content.ExContent;
-import Exploring.graphics.ExShaders;
 import Exploring.ui.AboutModDialog;
 import arc.util.Log;
 import mindustry.Vars;
