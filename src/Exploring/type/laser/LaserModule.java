@@ -117,12 +117,12 @@ public class LaserModule extends BlockModule {
                     break;
 
                 if (tile.build instanceof Laserc laserc && laserc.hasLaser()) {
-                        if (laserStorage >= out.get(i).amount * Time.delta) {
-                            laserc.module().add(out.get(i).amount * Time.delta);
-                            laserStorage -= out.get(i).amount * Time.delta;
-                            frag = false;
-                        }
-                        break;
+                    if (laserStorage >= out.get(i).amount * Time.delta) {
+                        laserc.module().add(out.get(i).amount * Time.delta);
+                        laserStorage -= out.get(i).amount * Time.delta;
+                        frag = false;
+                    }
+                    break;
                 }
 //
 //                if (p.get(tile.build) && cp.get(tile.build).hasLaser) {

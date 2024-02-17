@@ -5,6 +5,10 @@ import Exploring.type.func.Consumer;
 public class Loader {
     public Class<?> aClass;
 
+    public Loader(Class<?> aClass) {
+        this.aClass = aClass;
+    }
+
     public Object load(Consumer<Object> consumer, Class<?>[] argTypes, Object... args) {
         Object obj;
         try {
@@ -17,9 +21,5 @@ public class Loader {
             throw new RuntimeException(e);
         }
         return obj;
-    }
-
-    public Loader(Class<?> aClass) {
-        this.aClass = aClass;
     }
 }

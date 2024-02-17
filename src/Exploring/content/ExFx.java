@@ -1,5 +1,6 @@
 package Exploring.content;
 
+import Exploring.graphics.ExPal;
 import arc.graphics.Color;
 import arc.graphics.g2d.Fill;
 import arc.graphics.g2d.Lines;
@@ -8,8 +9,8 @@ import arc.math.Rand;
 import arc.math.geom.Vec2;
 import mindustry.entities.Effect;
 import mindustry.graphics.Drawf;
+import mindustry.graphics.Pal;
 
-import static arc.graphics.g2d.Draw.alpha;
 import static arc.graphics.g2d.Draw.color;
 import static arc.graphics.g2d.Lines.stroke;
 import static arc.math.Angles.randLenVectors;
@@ -83,11 +84,18 @@ public class ExFx {
         Drawf.light(e.x, e.y, 60f, c.a(0.5f).add(s.a(0.5f)), 0.6f * e.fout());
     }),
 
-    smokeCloudB = new Effect(70, e -> {
-        randLenVectors(e.id, e.fin(), 30, 30f, (x, y, fin, fout) -> {
-            color(Color.valueOf("ffe900"));
-            alpha((0.5f - Math.abs(fin - 0.5f)) * 2f);
-            Fill.circle(e.x + x, e.y + y, 0.5f + fout * 4f);
-        });
+    laserTrail = new Effect(30, e -> {
+        for(int i = 0; i < 2; i++){
+            color(ExPal.author);
+
+            float m = i == 0 ? 1f : 0.5f;
+
+            float rot = e.rotation + 180f;
+            float w = 1.5f * e.fout() * m;
+            Drawf.tri(e.x, e.y, w, (30f + Mathf.randomSeedRange(e.id, 15f)) * m, rot);
+            Drawf.tri(e.x, e.y, w, 10f * m, rot + 180f);
+        }
+
+        Drawf.light(e.x, e.y, 60f, Pal.bulletYellowBack, 0.6f * e.fout());
     });
 }

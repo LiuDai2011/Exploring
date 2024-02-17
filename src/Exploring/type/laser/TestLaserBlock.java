@@ -1,16 +1,9 @@
 package Exploring.type.laser;
 
-import Exploring.graphics.ExPal;
-import Exploring.util.Pair;
-import arc.Core;
-import arc.graphics.Color;
 import arc.math.geom.Geometry;
 import arc.math.geom.Point2;
 import arc.math.geom.Vec2;
 import arc.util.Time;
-import mindustry.ui.Bar;
-
-import static java.lang.Math.max;
 
 public class TestLaserBlock extends LaserBlock {
     public float laserP = 0f;
@@ -25,16 +18,7 @@ public class TestLaserBlock extends LaserBlock {
     public void setBars() {
         super.setBars();
 
-        addBar("laser", (LaserBuild entity) -> new Bar(
-                        () -> Core.bundle.formatString(
-                                "laser:{0}/{1}",
-                                ((float) Math.floor(entity.laser.laserStorage * 100f)) / 100f,
-                                ((float) Math.floor(entity.laser.laserStorageCapacity * 100f)) / 100f
-                        ),
-                        () -> ExPal.laserBar(Color.red, max(0f, entity.laser.overload())),
-                        () -> entity.laser.laserStorage / entity.laser.laserStorageCapacity
-                )
-        );
+        addBar("laser", (LaserBuild entity) -> LaserBuild.laserBar(entity));
     }
 
     public class TestLaserBuild extends LaserBuild {

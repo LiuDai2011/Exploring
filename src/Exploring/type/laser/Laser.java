@@ -1,6 +1,5 @@
 package Exploring.type.laser;
 
-import Exploring.util.VelocityException;
 import arc.math.geom.Point2;
 
 public class Laser {
@@ -25,9 +24,9 @@ public class Laser {
         return velocity;
     }
 
-    public void setVelocity(Point2 velocity) throws VelocityException {
+    public void setVelocity(Point2 velocity) throws IllegalArgumentException {
         if (velocity.x == 0 && velocity.y == 0)
-            throw new VelocityException("velocity cannot be 0, 0!");
+            throw new IllegalArgumentException("velocity cannot be 0, 0!");
         this.velocity = velocity;
     }
 }

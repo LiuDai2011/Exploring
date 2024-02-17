@@ -22,19 +22,6 @@ public class AnnihilateBulletType extends BulletType {
         super(0f, damage);
     }
 
-    @Override
-    public void update(Bullet b) {
-        super.update(b);
-        if (subs.get(b).size == 0)
-        if (b instanceof AnnihilateBullet annihilateBullet) {
-            Vec2 p1 = position(b.time, annihilateBullet.i, b.rotation());
-            Vec2 p2 = position(annihilateBullet.t, annihilateBullet.i, b.rotation());
-            b.move(p1.x - p2.x, p1.y - p2.y);
-            Log.info(p1.x + ", " + p1.y);
-            annihilateBullet.t = b.time;
-        }
-    }
-
     public static Vec2 position(float t, float i, float r) {
         float y = Mathf.log(1.1f, t) * i;
         float dis = Mathf.sqrt(t * t + y * y);
@@ -42,6 +29,19 @@ public class AnnihilateBulletType extends BulletType {
         float ax = Mathf.cos(a) * dis;
         float ay = Mathf.sin(a) * dis;
         return new Vec2(ax, ay);
+    }
+
+    @Override
+    public void update(Bullet b) {
+        super.update(b);
+        if (subs.get(b).size == 0)
+            if (b instanceof AnnihilateBullet annihilateBullet) {
+                Vec2 p1 = position(b.time, annihilateBullet.i, b.rotation());
+                Vec2 p2 = position(annihilateBullet.t, annihilateBullet.i, b.rotation());
+                b.move(p1.x - p2.x, p1.y - p2.y);
+                Log.info(p1.x + ", " + p1.y);
+                annihilateBullet.t = b.time;
+            }
     }
 
     @Override
