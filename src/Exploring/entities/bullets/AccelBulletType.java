@@ -2,12 +2,12 @@ package Exploring.entities.bullets;
 
 import arc.math.Interp;
 import arc.math.Mathf;
-import arc.struct.FloatSeq;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.gen.Bullet;
 
 /**
- * @author Yuria
+ * @author <Yuria Main>
+ * @author <LiuDai Ver2.0>
  */
 public class AccelBulletType extends BasicBulletType {
     public float velocityBegin = -1;
@@ -51,13 +51,15 @@ public class AccelBulletType extends BasicBulletType {
         boolean computeRange = rangeOverride < 0;
         float cal = 0;
 
-        FloatSeq speeds = new FloatSeq();
+        int c = 0;
+        float t = 0.0f;
         for (float i = 0; i <= 1; i += 0.05f) {
             float s = velocityBegin + accelInterp.apply(Mathf.curve(i, accelerateBegin, accelerateEnd)) * velocityIncrease;
-            speeds.add(s);
+            t += s;
             if (computeRange) cal += s * lifetime * 0.05f;
+            c++;
         }
-        speed = speeds.sum() / speeds.size;
+        speed = t / c;
 
         if (computeRange) cal += 1;
 

@@ -7,7 +7,7 @@ public class ExItems {
     public static Item
             titaniumAlloy, siliconBlock, iron, vacuumTube, pureSilicon, chip, quantumChip, battery, fullBattery,
 
-    stone, steel, blastUnit;
+    stone, steel, fireUnit, blastUnit;
 
     public static void load() {
         titaniumAlloy = new Item("titanium-alloy", Color.valueOf("9eb0eb")) {{
@@ -45,6 +45,9 @@ public class ExItems {
             hardness = 2;
         }};
         steel = new Item("steel", Color.valueOf("71c4e1")) {{
+            cost = 1f;
+        }};
+        fireUnit = new Item("fire-unit", Color.valueOf("f38d16")) {{
             cost = 1f;
         }};
         blastUnit = new Item("blast-unit", Color.valueOf("f34816")) {{

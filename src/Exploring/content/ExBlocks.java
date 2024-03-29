@@ -90,7 +90,7 @@ public class ExBlocks {
     exConveyor, exTitaniumConveyor, exPlastaniumConveyor, exArmoredConveyor, exDistributor, exJunction, exItemBridge, exPhaseConveyor, exSorter, exInvertedSorter, exRouter,
             exOverflowGate, exUnderflowGate, exMassDriver,
 
-    sandboxOverdriveDome,
+    sandboxOverdriveDome, ACtest,
 
     test_pt, exDuo, exScatter, exScorch, exHail, exArc, exWave, exLancer, exSwarmer, exSalvo, exFuse, exRipple, exCyclone, exForeshadow, exSpectre, exMeltdown, exSegment, exParallax, exTsunami,
             exT2Cyclone,
@@ -689,6 +689,13 @@ public class ExBlocks {
             speedBoost = 10000f;
             useTime = 300f;
         }};
+
+        ACtest = new AC("AC-test") {{
+            requirements(Category.effect, with(Items.copper, 1));
+            size = 3;
+            range = 200f;
+            addTimeMul = 0.1f;
+        }};
     }
 
     private static void loadTurret() {
@@ -996,6 +1003,21 @@ public class ExBlocks {
                                 }};
                             }};
                         }};
+                    }},
+                    Items.metaglass, new BasicBulletType(15f, 0) {{
+                        width = 7f;
+                        height = 9f;
+                        lifetime = 600f;
+                        ammoMultiplier = 20;
+                        statusDuration = 60f;
+                    }},
+                    Items.surgeAlloy, new BasicBulletType(15f, 0) {{
+                        width = 7f;
+                        height = 9f;
+                        lifetime = 600f;
+                        ammoMultiplier = 20;
+                        status = StatusEffects.wet;
+                        statusDuration = 60f;
                     }}
             );
 
@@ -2764,6 +2786,41 @@ public class ExBlocks {
                 }
             };
         }};
+
+        new ExWall("Author-Liu-Dai-Least") {{
+            requirements(Category.defense, with(Items.copper, 1));
+            health = 99999999;
+            researchCostMultiplier = 0.1f;
+            envDisabled |= Env.scorching;
+            update = true;
+
+            buildType = () -> new ExWallBuild() {
+                float timer = 0;
+                @Override
+                public void updateTile() {
+                    timer += Time.delta;
+                    if (timer < 2) return;
+                    else timer %= 2;
+                    boolean e = true;
+                    for (int i = -20; i <= 20; i++) {
+                        for (int j = -20; j <= 20; j++) {
+                            Tile t = Vars.world.tile(tile.x + i, tile.y + j);
+                            if (t == null) continue;
+                            if (Objects.equals(t.team(), team) || Objects.equals(t.team(), Team.derelict) || t.block() instanceof CoreBlock) {
+                                continue;
+                            }
+                            if (t.build != null) {
+                                t.build.damage(1);
+                                e = false;
+                            }
+                        }
+                    }
+                    if (e) {
+                        kill();
+                    }
+                }
+            };
+        }};
     }
 
     private static void loadTest() {
@@ -2967,7 +3024,7 @@ public class ExBlocks {
 
         starFire = new ExItemTurret("star-fire") {{
             requirements(Category.turret, with(Items.copper, 1000, Items.metaglass, 600, Items.surgeAlloy, 300, Items.plastanium, 200, Items.silicon, 600));
-            ammo(ExItems.blastUnit, ExBullets.starFire);
+            ammo(ExItems.fireUnit, ExBullets.starFire, ExItems.blastUnit, ExBullets.starFirePro, Items.copper, ExBullets.starFireProMaxUltra);
 
             maxAmmo = 40;
             ammoPerShot = 4;
