@@ -684,8 +684,7 @@ public class ExBlocks {
 
         sandboxOverdriveDome = new ExOverdriveProjector("sandbox-overdrive-dome") {{
             requirements(Category.effect, with(Items.copper, 1));
-            size = 3;
-            range = 2000f;
+            range = 80f;
             speedBoost = 10000f;
             useTime = 300f;
         }};
