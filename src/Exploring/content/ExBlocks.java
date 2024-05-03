@@ -3104,6 +3104,4 @@ public class ExBlocks {
             laserShootNeeds = 25f;
         }};
     }
-
-    // Vars.state.rules.infiniteResources = true;Vars.content.each(e => {if(!(e instanceof UnlockableContent)) return;e.quietUnlock();});
 }

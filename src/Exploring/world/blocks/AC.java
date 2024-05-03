@@ -37,12 +37,16 @@ public class AC extends Block {
     public class ACBuild extends Building implements Ranged {
         @Override
         public void updateTile() {
-            float addTime = Time.delta;
+            float addTime = Time.delta * addTimeMul;
             Seq<Bullet> intersected = Groups.bullet.intersect(x - range, y - range, 2 * range, 2 * range);
 
             for (Bullet bullet : intersected) {
                 if (bullet != null && bullet.within(this, range) && bullet.team() == team) {
-                    bullet.lifetime += addTime * addTimeMul;
+//                    float f = bullet.time / bullet.lifetime;
+//                    bullet.time += bullet.time * addTime / f + 1;
+//                    bullet.lifetime += bullet.lifetime * addTime / f + 1;
+                    bullet.time += addTime;
+                    bullet.lifetime += 2 * addTime;
                     bullet.vel.x *= velMul;
                     bullet.vel.y *= velMul;
                     bullet.vel.add(Angles.trnsx(bullet.rotation(), 0.00001f), Angles.trnsy(bullet.rotation(), 0.00001f));

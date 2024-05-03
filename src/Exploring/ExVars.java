@@ -1,5 +1,6 @@
 package Exploring;
 
+import Exploring.ui.ExResearchDialog;
 import Exploring.util.Pair;
 import Exploring.util.Tuple;
 import mindustry.type.Item;
@@ -33,4 +34,10 @@ public class ExVars {
                             >
                     >
             > molecularWeight;
+
+    public static ExResearchDialog techUI;
+
+    public static void init() {
+        techUI = new ExResearchDialog();
+    }
 }

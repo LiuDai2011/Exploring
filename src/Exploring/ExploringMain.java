@@ -2,8 +2,10 @@ package Exploring;
 
 import Exploring.content.ExContent;
 import Exploring.ui.AboutModDialog;
+import arc.Events;
 import arc.util.Log;
 import mindustry.Vars;
+import mindustry.game.EventType;
 import mindustry.mod.Mod;
 import mindustry.mod.Mods;
 
@@ -46,6 +48,11 @@ public class ExploringMain extends Mod {
     public ExploringMain() {
         Log.info("Loaded Exploring constructor.");
 
+        Events.on(EventType.ClientLoadEvent.class, e -> {
+            ExVars.init();
+            ExVars.techUI.show();
+        });
+
         AboutModDialog.show();
     }
 
@@ -62,6 +69,8 @@ public class ExploringMain extends Mod {
         MOD = Vars.mods.getMod(getClass());
 
 //        ExShaders.init();
+
+        ExSettings.load();
 
         ExContent.loadPriority();
 

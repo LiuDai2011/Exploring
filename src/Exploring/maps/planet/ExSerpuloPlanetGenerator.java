@@ -22,6 +22,7 @@ import mindustry.ai.Astar;
 import mindustry.ai.BaseRegistry;
 import mindustry.content.Blocks;
 import mindustry.content.Liquids;
+import mindustry.game.Schematic;
 import mindustry.game.Schematics;
 import mindustry.game.Team;
 import mindustry.game.Waves;
@@ -74,6 +75,10 @@ public class ExSerpuloPlanetGenerator extends PlanetGenerator {
             Blocks.sporeMoss, Blocks.shale,
             Blocks.moss, Blocks.shale
     );
+
+    {
+        defaultLoadout = Schematics.readBase64("bXNjaAF4nBXKQQqAIBRF0Wc/mrSAVuGKooHaowRT+TZw+RlczuhCIII5u4cQz4D1ZAsa6xtLBrAk55kapv0w2NhrKhrzZdltKErbbqfn+Mzf4AMvABPQ");
+    }
 
     float water = 2f / arr[0].length;
 
