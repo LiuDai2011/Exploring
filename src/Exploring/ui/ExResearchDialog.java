@@ -1,44 +1,60 @@
 package Exploring.ui;
 
+import Exploring.content.ResearchTree;
 import Exploring.content.ResearchTree.ResearchNode;
 import Exploring.input.ExBinding;
+import Exploring.type.ExEventType.ExResearchEvent;
 import arc.Core;
+import arc.Events;
 import arc.graphics.Color;
 import arc.math.Interp;
 import arc.math.Mathf;
 import arc.math.geom.Rect;
 import arc.scene.Element;
 import arc.scene.Group;
+import arc.scene.actions.Actions;
 import arc.scene.actions.RelativeTemporalAction;
 import arc.scene.event.Touchable;
 import arc.scene.style.TextureRegionDrawable;
 import arc.scene.ui.ImageButton;
+import arc.scene.ui.Label;
+import arc.scene.ui.TextButton;
 import arc.scene.ui.layout.Scl;
 import arc.scene.ui.layout.Table;
 import arc.struct.ObjectSet;
 import arc.struct.Seq;
 import arc.util.Align;
-import arc.util.Nullable;
 import arc.util.Scaling;
+import arc.util.Structs;
+import mindustry.content.TechTree;
+import mindustry.core.UI;
+import mindustry.game.Objectives;
 import mindustry.gen.Icon;
+import mindustry.gen.Sounds;
 import mindustry.gen.Tex;
 import mindustry.graphics.Pal;
 import mindustry.type.ItemStack;
+import mindustry.ui.Fonts;
 import mindustry.ui.Styles;
 import mindustry.ui.dialogs.BaseDialog;
 import mindustry.ui.layout.TreeLayout.TreeNode;
 
-import static mindustry.Vars.content;
 import static mindustry.Vars.mobile;
+import static mindustry.Vars.ui;
+import static mindustry.gen.Tex.buttonDown;
+import static mindustry.gen.Tex.buttonOver;
 
 public class ExResearchDialog extends BaseDialog {
     public final float nodeSize = Scl.scl(60f);
     public ObjectSet<ResearchTreeNode> nodes = new ObjectSet<>();
     public Rect bounds = new Rect();
     public View view;
-
+    public ResearchTreeNode root;
     public ExResearchDialog() {
         super("");
+
+//        root = new ResearchTreeNode(ResearchTree.roots.first(), null);
+
         titleTable.remove();
         titleTable.clear();
         titleTable.top();
@@ -69,9 +85,11 @@ public class ExResearchDialog extends BaseDialog {
 
     void copyInfo() {}
 
-    void checkNodes(ResearchNode node) {}
+    void checkNodes(ResearchTreeNode node) {}
 
-//    boolean selectable(ResearchNode node) {}
+    boolean selectable(ResearchNode node) {
+        throw new IllegalCallerException();
+    }
 
     boolean locked(ResearchNode node) {
         return node.locked();
@@ -111,16 +129,16 @@ public class ExResearchDialog extends BaseDialog {
         public boolean moved = false;
         public ImageButton hoverNode;
         public Table infoTable = new Table();
-
-        {
-            rebuildAll();
-        }
-
-        public void rebuildAll() {
-            clear();
-            hoverNode = null;
-            infoTable.clear();
-            infoTable.touchable = Touchable.enabled;
+//
+//        {
+//            rebuildAll();
+//        }
+//
+//        public void rebuildAll() {
+//            clear();
+//            hoverNode = null;
+//            infoTable.clear();
+//            infoTable.touchable = Touchable.enabled;
 //
 //            for (ResearchTreeNode node : nodes) {
 //                ImageButton button = new ImageButton(node.node.icon, Styles.nodei);
@@ -192,7 +210,7 @@ public class ExResearchDialog extends BaseDialog {
 //            setOrigin(Align.center);
 //            setTransform(true);
 //            released(() -> moved = false);
-        }
+//        }
 //
 //        void clamp() {
 //            float pad = nodeSize;
@@ -213,7 +231,8 @@ public class ExResearchDialog extends BaseDialog {
 //        }
 //
 //        void spend(ResearchNode node) {
-//            boolean complete = true;
+//            node.spend();
+//            boolean complete = node.tryUnlock();
 //
 //            if(complete){
 //                unlock(node);
@@ -222,16 +241,166 @@ public class ExResearchDialog extends BaseDialog {
 //            node.save();
 //
 //            Core.scene.act();
-//            rebuild(shine);
+//            rebuild();
 //        }
 //
-//        void unlock(ResearchNode node) {}
+//        void unlock(ResearchNode node) {
+//            var parent = node.parent;
+//            while (parent != null) {
+//                parent.unlock();
+//                parent = parent.parent;
+//            }
+//
+//            checkNodes(root);
+//            hoverNode = null;
+//            treeLayout();
+//            rebuild();
+//            Core.scene.act();
+//            Sounds.unlock.play();
+//            Events.fire(new ExResearchEvent(node));
+//        }
 //
 //        void rebuild() {
-//            rebuild(null);
-//        }
+//            ImageButton button = hoverNode;
 //
-//        void rebuild(@Nullable boolean[] shine) {}
+//            infoTable.remove();
+//            infoTable.clear();
+//            infoTable.update(null);
+//
+//            if(button == null) return;
+//
+//            ResearchNode node = (ResearchNode) button.userObject;
+//
+//            infoTable.exited(() -> {
+//                if(hoverNode == button && !infoTable.hasMouse() && !hoverNode.hasMouse()){
+//                    hoverNode = null;
+//                    rebuild();
+//                }
+//            });
+//
+//            infoTable.update(() -> infoTable.setPosition(button.x + button.getWidth(), button.y + button.getHeight(), Align.topLeft));
+//
+//            infoTable.left();
+//            infoTable.background(Tex.button).margin(8f);
+//
+//            boolean selectable = selectable(node);//done
+//
+//            infoTable.table(b -> {
+//                b.margin(0).left().defaults().left();
+//
+//                if(selectable){
+//                    b.button(Icon.info, Styles.flati, node::showUI).growY().width(50f);
+//                }
+//                b.add().grow();
+//                b.table(desc -> {
+//                    desc.left().defaults().left();
+//                    desc.add(selectable ? node.content.localizedName : "[accent]???");
+//                    desc.row();
+//                    if(locked(node) || debugShowRequirements){
+//
+//                        desc.table(t -> {
+//                            t.left();
+//                            if(selectable){
+//
+//                                //check if there is any progress, add research progress text
+//                                if(Structs.contains(node.finishedRequirements, s -> s.amount > 0)){
+//                                    float sum = 0f, used = 0f;
+//                                    boolean shiny = false;
+//
+//                                    for(int i = 0; i < node.requirements.length; i++){
+//                                        sum += node.requirements[i].item.cost * node.requirements[i].amount;
+//                                        used += node.finishedRequirements[i].item.cost * node.finishedRequirements[i].amount;
+//                                        if(shine != null) shiny |= shine[i];
+//                                    }
+//
+//                                    Label label = t.add(Core.bundle.format("research.progress", Math.min((int)(used / sum * 100), 99))).left().get();
+//
+//                                    if(shiny){
+//                                        label.setColor(Pal.accent);
+//                                        label.actions(Actions.color(Color.lightGray, 0.75f, Interp.fade));
+//                                    }else{
+//                                        label.setColor(Color.lightGray);
+//                                    }
+//
+//                                    t.row();
+//                                }
+//
+//                                for(int i = 0; i < node.requirements.length; i++){
+//                                    ItemStack req = node.requirements[i];
+//                                    ItemStack completed = node.finishedRequirements[i];
+//
+//                                    //skip finished stacks
+//                                    if(req.amount <= completed.amount && !debugShowRequirements) continue;
+//                                    boolean shiny = shine != null && shine[i];
+//
+//                                    t.table(list -> {
+//                                        int reqAmount = debugShowRequirements ? req.amount : req.amount - completed.amount;
+//
+//                                        list.left();
+//                                        list.image(req.item.uiIcon).size(8 * 3).padRight(3);
+//                                        list.add(req.item.localizedName).color(Color.lightGray);
+//                                        Label label = list.label(() -> " " +
+//                                                UI.formatAmount(Math.min(items.get(req.item), reqAmount)) + " / "
+//                                                + UI.formatAmount(reqAmount)).get();
+//
+//                                        Color targetColor = items.has(req.item) ? Color.lightGray : Color.scarlet;
+//
+//                                        if(shiny){
+//                                            label.setColor(Pal.accent);
+//                                            label.actions(Actions.color(targetColor, 0.75f, Interp.fade));
+//                                        }else{
+//                                            label.setColor(targetColor);
+//                                        }
+//
+//                                    }).fillX().left();
+//                                    t.row();
+//                                }
+//                            }else if(node.objectives.size > 0){
+//                                t.table(r -> {
+//                                    r.add("@complete").colspan(2).left();
+//                                    r.row();
+//                                    for(Objectives.Objective o : node.objectives){
+//                                        if(o.complete()) continue;
+//
+//                                        r.add("> " + o.display()).color(Color.lightGray).left();
+//                                        r.image(o.complete() ? Icon.ok : Icon.cancel, o.complete() ? Color.lightGray : Color.scarlet).padLeft(3);
+//                                        r.row();
+//                                    }
+//                                });
+//                                t.row();
+//                            }
+//                        });
+//                    }else{
+//                        desc.add("@completed");
+//                    }
+//                }).pad(9);
+//
+//                if(mobile && locked(node)){
+//                    b.row();
+//                    b.button("@research", Icon.ok, new TextButton.TextButtonStyle(){{
+//                        disabled = Tex.button;
+//                        font = Fonts.def;
+//                        fontColor = Color.white;
+//                        disabledFontColor = Color.gray;
+//                        up = buttonOver;
+//                        over = buttonDown;
+//                    }}, () -> spend(node)).disabled(i -> !canSpend(node)).growX().height(44f).colspan(3);
+//                }
+//            });
+//
+//            infoTable.row();
+//            if(node.content.description != null && node.content.inlineDescription && selectable){
+//                infoTable.table(t -> t.margin(3f).left().labelWrap(node.content.displayDescription()).color(Color.lightGray).growX()).fillX();
+//            }
+//
+//            addChild(infoTable);
+//
+//            checkMargin();
+//            Core.app.post(() -> checkMargin());
+//
+//            infoTable.pack();
+//            infoTable.act(Core.graphics.getDeltaTime());
+//        }
 //
 //        @Override
 //        protected void drawChildren() {}

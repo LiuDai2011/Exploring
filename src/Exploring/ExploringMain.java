@@ -1,6 +1,7 @@
 package Exploring;
 
 import Exploring.content.ExContent;
+import Exploring.content.ResearchTree;
 import Exploring.ui.AboutModDialog;
 import arc.Events;
 import arc.util.Log;
@@ -75,5 +76,7 @@ public class ExploringMain extends Mod {
         ExContent.loadPriority();
 
         ExContent.loadVars();
+
+        ResearchTree.ResearchNode.reload();
     }
 }

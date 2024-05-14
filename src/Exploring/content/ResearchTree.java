@@ -1,6 +1,8 @@
 package Exploring.content;
 
+import Exploring.type.ExEventType.ExUnlockEvent;
 import arc.Core;
+import arc.Events;
 import arc.func.Cons;
 import arc.graphics.g2d.TextureRegion;
 import arc.scene.style.Drawable;
@@ -15,18 +17,18 @@ public class ResearchTree {
     public static Seq<ResearchNode> roots = new Seq<>();
 
     public static ResearchNode nodeRoot(String name, Runnable children){
-        return nodeRoot(name, false, children);
+        return nodeRoot(name, false, children, () -> {}, () -> {});
     }
 
-    public static ResearchNode nodeRoot(String name, boolean requireUnlock, Runnable children) {
-        ResearchNode root = node(name, children);
+    public static ResearchNode nodeRoot(String name, boolean requireUnlock, Runnable children, Runnable onUnlock, Runnable onReload) {
+        ResearchNode root = node(name, children, onUnlock, onReload);
         root.requiresUnlock = requireUnlock;
         roots.add(root);
         return root;
     }
 
-    public static ResearchNode node(String name, Runnable children) {
-        ResearchNode node = new ResearchNode(context, name);
+    public static ResearchNode node(String name, Runnable children, Runnable onUnlock, Runnable onReload) {
+        ResearchNode node = new ResearchNode(context, name, onUnlock, onReload);
 
         ResearchNode prev = context;
         context = node;
@@ -37,7 +39,7 @@ public class ResearchTree {
     }
 
     public static ResearchNode node(String name) {
-        return node(name, () -> {});
+        return node(name, () -> {}, () -> {}, () -> {});
     }
 
     public static @Nullable ResearchNode context(){
@@ -45,6 +47,8 @@ public class ResearchTree {
     }
 
     public static class ResearchNode {
+        private boolean unlocked = false;
+        
         public int depth;
         public @Nullable TextureRegion icon;
         public String name;
@@ -53,8 +57,10 @@ public class ResearchTree {
         public float progress = 0f;
         public @Nullable ResearchNode parent;
         public final Seq<ResearchNode> children = new Seq<>();
+        
+        public final Runnable onUnlock, onReload;
 
-        public ResearchNode(@Nullable ResearchNode parent, String name) {
+        public ResearchNode(@Nullable ResearchNode parent, String name, Runnable onUnlock, Runnable onReload) {
             if (parent == null) {
                 root = false;
             }
@@ -64,6 +70,13 @@ public class ResearchTree {
             this.name = name;
 
             all.add(this);
+            
+            this.onUnlock = onUnlock;
+            this.onReload = onReload;
+        }
+        
+        public static void reload() {
+            // TODO
         }
 
         public void each(Cons<ResearchNode> consumer){
@@ -98,7 +111,29 @@ public class ResearchTree {
         }
 
         public boolean locked() {
-            return progress > 1f;
+            return !unlocked;
+        }
+
+        public void unlock() {
+            unlocked = true;
+            Events.fire(new ExUnlockEvent(this));
+            onUnlock.run();
+        }
+        
+        public boolean tryUnlock() {
+            if (progress >= 1f) {
+                unlock();
+                return true;
+            }
+            return false;
+        }
+
+        public void spend() {
+            throw new IllegalCallerException();
+        }
+
+        public void showUI() {
+            throw new IllegalCallerException();
         }
     }
 }
