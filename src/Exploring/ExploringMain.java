@@ -1,7 +1,6 @@
 package Exploring;
 
 import Exploring.content.ExContent;
-import Exploring.content.ResearchTree;
 import Exploring.ui.AboutModDialog;
 import arc.Events;
 import arc.util.Log;
@@ -11,22 +10,6 @@ import mindustry.mod.Mod;
 import mindustry.mod.Mods;
 
 public class ExploringMain extends Mod {
-    /*
-     TODO: Update version
-     TODO: EnergyBall
-     TODO: RusttableWall
-     TODO: molecularWeight
-     TODO: Unit
-     TODO: 研究中心
-     TODO: Logic
-     TODO: Liquids
-     TODO: Formula
-     TODO: Laser
-     TODO: Dyson Sphere
-     TODO: BOSS S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S S!
-     TODO: ...
-    */
-
     public static final String MOD_NAME = "exploring";
     public static final String MOD_NAME_BAR = "exploring-";
     public static final String MOD_REPO = "LiuDai2011/Exploring";
@@ -47,14 +30,11 @@ public class ExploringMain extends Mod {
 //    }
 
     public ExploringMain() {
-        Log.info("Loaded Exploring constructor.");
+        Log.info("run 'public ExploringMain()'");
 
         Events.on(EventType.ClientLoadEvent.class, e -> {
-            ExVars.init();
-            ExVars.techUI.show();
+            new AboutModDialog().show();
         });
-
-        AboutModDialog.show();
     }
 
     public static String name(String name) {
@@ -63,20 +43,10 @@ public class ExploringMain extends Mod {
 
     @Override
     public void loadContent() {
-        Log.info("Loading Exploring content.");
-
-        Log.info("Loading Exploring Mod Object.");
+        Log.info("load content");
 
         MOD = Vars.mods.getMod(getClass());
 
-//        ExShaders.init();
-
-        ExSettings.load();
-
-        ExContent.loadPriority();
-
-        ExContent.loadVars();
-
-        ResearchTree.ResearchNode.reload();
+        ExContent.load();
     }
 }
