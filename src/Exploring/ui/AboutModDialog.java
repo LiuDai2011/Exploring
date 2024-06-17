@@ -1,13 +1,18 @@
 package Exploring.ui;
 
-import Exploring.ExploringMain;
+import arc.Core;
 import mindustry.ui.dialogs.BaseDialog;
+
+import static Exploring.ExploringMain.AboutMod;
+import static Exploring.ExploringMain.toText;
 
 public class AboutModDialog extends BaseDialog {
     public AboutModDialog() {
-        super("about mod");
-        cont.add("[blue]ABOUT[]").row();
-        cont.add(ExploringMain.ABOUT_MOD).row();
-        cont.button("I see", this::hide).size(100f, 50f);
+        super("@ex-about-mod-text");
+        cont.add(AboutMod()).row();
+        buttons.check(toText("ex-not-show-about-next"), b -> {
+            Core.settings.put("ex-show-about", !b);
+        }).center();
+        addCloseButton();
     }
 }
