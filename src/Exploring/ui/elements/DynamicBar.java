@@ -13,7 +13,6 @@ import arc.math.Mathf;
 import arc.math.geom.Rect;
 import arc.scene.style.Drawable;
 import arc.scene.ui.layout.Scl;
-import arc.util.Log;
 import arc.util.pooling.Pools;
 import mindustry.gen.Tex;
 import mindustry.ui.Bar;

@@ -7,6 +7,7 @@ import mindustry.content.Liquids;
 import mindustry.game.EventType;
 import mindustry.type.ItemStack;
 import mindustry.world.Block;
+import mindustry.world.blocks.sandbox.ItemSource;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

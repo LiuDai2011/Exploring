@@ -3,6 +3,7 @@ package Exploring.content;
 import Exploring.ExSettings;
 import Exploring.ui.elements.DynamicBar;
 import Exploring.world.blocks.MetaItemBridge;
+import Exploring.world.blocks.test.DPSWall;
 import arc.graphics.Color;
 import mindustry.content.Items;
 import mindustry.type.Category;
@@ -19,7 +20,7 @@ public class ExBlocks {
     public static Block
             metaItemBridge,
 
-    test;
+    test, dps1, dps2, dps3;
 
     public static void load() {
         metaItemBridge = new MetaItemBridge("meta-item-bridge") {{
@@ -54,5 +55,9 @@ public class ExBlocks {
                 ));
             }
         };
+
+        dps1 = new DPSWall("dps-1", 1);
+        dps2 = new DPSWall("dps-2", 2);
+        dps3 = new DPSWall("dps-3", 3);
     }
 }

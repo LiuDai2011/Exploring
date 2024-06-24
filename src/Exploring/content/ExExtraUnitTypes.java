@@ -1,31 +1,39 @@
 package Exploring.content;
 
-import Exploring.graphics.BlackHoleRenderer;
 import Exploring.graphics.ExPal;
+import Exploring.world.entities.abilities.NonurgentRepairAbility;
+import Exploring.world.entities.abilities.SelfbombAbility;
+import Exploring.world.entities.abilities.UrgentRepairAbility;
+import Exploring.world.entities.bullets.BlackHoleBulletType;
+import Exploring.world.entities.units.ReignXEntity;
+import Exploring.world.meta.ExStatValues;
+import arc.Core;
 import arc.graphics.Color;
-import arc.graphics.g2d.Draw;
-import arc.graphics.g2d.Fill;
-import arc.math.Interp;
+import arc.scene.ui.layout.Table;
+import arc.struct.ObjectMap;
+import arc.util.Strings;
 import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.content.StatusEffects;
+import mindustry.entities.abilities.Ability;
 import mindustry.entities.abilities.ForceFieldAbility;
 import mindustry.entities.abilities.RepairFieldAbility;
+import mindustry.entities.abilities.ShieldRegenFieldAbility;
 import mindustry.entities.bullet.ArtilleryBulletType;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.BulletType;
 import mindustry.entities.bullet.LaserBulletType;
-import mindustry.gen.Bullet;
-import mindustry.gen.Sounds;
-import mindustry.gen.UnitEntity;
-import mindustry.graphics.Drawf;
+import mindustry.gen.*;
 import mindustry.graphics.Pal;
 import mindustry.type.UnitType;
 import mindustry.type.Weapon;
 import mindustry.type.ammo.ItemAmmoType;
+import mindustry.ui.Bar;
+import mindustry.world.meta.Stat;
+import mindustry.world.meta.StatUnit;
 
 public class ExExtraUnitTypes {
-    public static UnitType daggerX, maceX, fortressX, scepterX;
+    public static UnitType daggerX, maceX, fortressX, scepterX, reignX;
 
     public static void load() {
         daggerX = new UnitType("dagger-x") {{
@@ -40,27 +48,7 @@ public class ExExtraUnitTypes {
                 y = 2f;
                 top = false;
                 ejectEffect = Fx.casing1;
-                bullet = new BulletType() {
-                    {
-                        lifetime = 60f;
-                        trailColor = ExPal.lightBlue;
-//                        trailChance = 1f;
-                        trailInterval = 0f;
-                        trailLength = 15;
-
-                        speed = 3;
-                        damage = 15;
-                    }
-
-                    @Override
-                    public void draw(Bullet b) {
-                        super.draw(b);
-                        Draw.color(trailColor);
-                        Fill.circle(x, y, 20f);
-                        Drawf.light(x, y, 20f, trailColor, 0.7f);
-                        Draw.reset();
-                    }
-                };
+                bullet = ExBulletTypes.smallEnergyShell;
             }});
 
             abilities.add(new ForceFieldAbility(20f, 0.1f, 50f, 60f * 1));
@@ -120,12 +108,14 @@ public class ExExtraUnitTypes {
 
             weapons.add(
                     new Weapon("large-weapon") {{
+                        range = 20f;
+
                         shake = 4f;
                         shootY = 9f;
                         x = 4f;
                         y = 0f;
                         rotateSpeed = 2f;
-                        reload = 45f;
+                        reload = 13f;
                         recoil = 4f;
                         shootSound = Sounds.laser;
                         shadow = 20f;
@@ -140,6 +130,8 @@ public class ExExtraUnitTypes {
                             length = 40f;
                             shootEffect = Fx.shockwave;
                             colors = new Color[]{ExPal.lightBlue, ExPal.lightBlue.cpy().lerp(Color.white, 0.5f), Color.white};
+                            pierce = true;
+                            pierceBuilding = true;
                         }};
                     }},
                     new Weapon("artillery") {{
@@ -176,7 +168,7 @@ public class ExExtraUnitTypes {
             hitSize = 22f;
             rotateSpeed = 2.1f;
             health = 19000;
-            armor = 10f;
+            armor = 16f;
             mechFrontSway = 1f;
             ammoType = new ItemAmmoType(Items.thorium);
 
@@ -192,68 +184,63 @@ public class ExExtraUnitTypes {
             }};
 
             weapons.add(
-                    new Weapon("scepter-weapon") {{
-                        top = false;
-                        y = 1f;
-                        x = 16f;
-                        shootY = 8f;
-                        reload = 30f;
-                        recoil = 5f;
-                        shake = 2f;
-                        ejectEffect = Fx.casing3;
-                        shootSound = Sounds.bang;
-                        inaccuracy = 3f;
+                    new Weapon("scepter-weapon") {
+                        {
+                            top = false;
+                            y = 1f;
+                            x = 16f;
+                            shootY = 8f;
+                            reload = 60f;
+                            recoil = 5f;
+                            shake = 2f;
+                            ejectEffect = Fx.casing3;
+                            shootSound = Sounds.bang;
+                            inaccuracy = 3f;
 
-//                        shoot.shots = 5;
-//                        shoot.shotDelay = 3f;
+                            bullet = new BasicBulletType(7f, 50, "shell") {
+                                {
+                                    lifetime = 35f;
+                                    shootEffect = Fx.shootBig;
+                                    splashDamage = 20;
+                                    splashDamageRadius = 15f;
 
-                        bullet = new BasicBulletType(7f, 50, "shell") {
-                            {
-                                float inRad = 8 * 1f;
-                                float outRad = 8 * 8f;
+                                    trailColor = ExPal.lightBlue;
+                                    trailLength = 15;
 
-                                lifetime = 35f;
-                                shootEffect = Fx.shootBig;
-                                splashDamage = 20;
-                                splashDamageRadius = 15f;
+                                    despawnEffect = healEffect = Fx.none;
 
-                                trailColor = ExPal.lightBlue;
-                                trailLength = 15;
+                                    fragBullet = new BlackHoleBulletType() {{
+                                        inRad = 3 * 1.8f;
+                                        outRad = 3 * 8f;
 
-                                fragBullet = new BulletType() {
-                                    {
-                                        speed = 0f;
-                                        lifetime = 50f;
-                                        hittable = false;
-                                        splashDamageRadius = 20f;
-                                        splashDamage = 80;
-                                    }
+                                        lifetime = 180f;
+                                        blackHoleDamage = 0.3f;
+                                        blackHoleDamageRadius = 20f;
+                                    }};
+                                }
 
-                                    @Override
-                                    public void draw(Bullet b) {
-                                        float in = b.time <= b.lifetime - 72 ?
-                                                Math.min(b.time / 60f, 1) :
-                                                (b.lifetime - b.time) / 72f;
-                                        in = Interp.fastSlow.apply(in);
-                                        BlackHoleRenderer.addBlackHole(b.x, b.y, inRad * in, outRad * in, Math.min(1, in + 0.1f));
-                                        super.draw(b);
-                                    }
-                                };
+                                @Override
+                                public void hit(Bullet b, float x, float y) {
+                                    super.hit(b, x, y);
+                                    fragBullet.create(b, b.x, b.y, 0, 1f, 1f);
+                                }
+                            };
+                        }
+
+                        @Override
+                        public void addStats(UnitType u, Table t) {
+                            if (inaccuracy > 0) {
+                                t.row();
+                                t.add("[lightgray]" + Stat.inaccuracy.localized() + ": [white]" + (int) inaccuracy + " " + StatUnit.degrees.localized());
+                            }
+                            if (!alwaysContinuous && reload > 0) {
+                                t.row();
+                                t.add("[lightgray]" + Stat.reload.localized() + ": " + (mirror ? "2x " : "") + "[white]" + Strings.autoFixed(60f / reload * shoot.shots, 2) + " " + StatUnit.perSecond.localized());
                             }
 
-//                            @Override
-//                            public void createFrags(Bullet b, float x, float y) {
-//                                fragBullet.create(b, b.x, b.y, 0, 1f, 1f);
-//                            }
-
-
-                            @Override
-                            public void hit(Bullet b, float x, float y) {
-                                super.hit(b, x, y);
-                                fragBullet.create(b, b.x, b.y, 0, 1f, 1f);
-                            }
-                        };
-                    }},
+                            ExStatValues.ammo(ObjectMap.of(u, bullet)).display(t);
+                        }
+                    },
 
                     new Weapon("mount-weapon") {{
                         reload = 8f;
@@ -274,9 +261,96 @@ public class ExExtraUnitTypes {
             );
 
             abilities.add(
-                    new ForceFieldAbility(50f, 4f, 3000f, 60f * 2),
-                    new RepairFieldAbility(1000f, 60f * 5, 50f)
+                    new ForceFieldAbility(50f, 4f, 4000f, 60f * 2),
+                    new RepairFieldAbility(1000f, 60f * 0.5f, 50f)
             );
         }};
+
+        reignX = new UnitType("reign-x") {
+            {
+                constructor = ReignXEntity::new;
+
+                speed = 0.4f;
+                hitSize = 26f;
+                rotateSpeed = 1.65f;
+                health = 53000;
+                armor = 30f;
+                mechStepParticles = true;
+                stepShake = 0.75f;
+                drownTimeMultiplier = 6f;
+                mechFrontSway = 1.9f;
+                mechSideSway = 0.6f;
+                ammoType = new ItemAmmoType(Items.thorium);
+
+                weapons.add(
+                        new Weapon("reign-weapon") {{
+                            top = false;
+                            y = 1f;
+                            x = 21.5f;
+                            shootY = 11f;
+                            reload = 2f;
+                            recoil = 5f;
+                            shake = 2f;
+                            ejectEffect = Fx.casing4;
+                            shootSound = Sounds.bang;
+
+                            bullet = new BasicBulletType(13f, 100) {{
+                                pierce = true;
+                                pierceCap = 10;
+                                width = 14f;
+                                height = 33f;
+                                lifetime = 30f;
+                                shootEffect = Fx.shootBig;
+                                fragVelocityMin = 0.4f;
+
+                                hitEffect = Fx.blastExplosion;
+                                splashDamage = 180f;
+                                splashDamageRadius = 40f;
+
+                                fragBullets = 3;
+                                fragLifeMin = 0f;
+                                fragRandomSpread = 30f;
+
+                                fragBullet = new BasicBulletType(9f, 20) {{
+                                    width = 10f;
+                                    height = 10f;
+                                    pierce = true;
+                                    pierceBuilding = true;
+                                    pierceCap = 3;
+
+                                    lifetime = 50f;
+                                    hitEffect = Fx.flakExplosion;
+                                    splashDamage = 50f;
+                                    splashDamageRadius = 30f;
+                                }};
+                            }};
+                        }}
+                );
+
+                abilities.add(new Ability[]{
+                        new ForceFieldAbility(64, 2000, 15000, 60f),
+                        new RepairFieldAbility(1000, 30f, 32),
+                        new ShieldRegenFieldAbility(1000, 20000, 60f * 2, 64),
+                        new UrgentRepairAbility(),
+                        new NonurgentRepairAbility(),
+                        new SelfbombAbility(ReignXEntity.destroyMulti, ReignXEntity.destroyRad)
+                });
+            }
+
+            @Override
+            public void display(Unit unit, Table table) {
+                super.display(unit, table);
+                ReignXEntity unitR = (ReignXEntity) unit;
+                table.table(bars -> {
+                    bars.defaults().growX().height(20f).pad(4);
+                    bars.add(new Bar(
+                            () -> Core.bundle.get("bar.reign-x-urgent-timer"),
+                            () -> unitR.cooldown ? Color.white : ExPal.lightBlue,
+                            () -> unitR.urgentTimer / ReignXEntity.timerMax
+                    ));
+                    bars.row();
+                }).growX();
+            }
+        };
     }
 }

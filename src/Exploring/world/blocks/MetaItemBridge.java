@@ -87,7 +87,7 @@ public class MetaItemBridge extends Block {
         public float unloadTimer = 0f;
         public int rotations = 0;
         public Item sortItem = null;
-        
+
         @Nullable
         public Building getLinkingBuilding() {
             return Vars.world.build(link);

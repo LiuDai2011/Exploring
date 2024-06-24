@@ -2,7 +2,6 @@ package Exploring;
 
 import Exploring.content.ExContent;
 import Exploring.graphics.BlackHoleRenderer;
-import Exploring.graphics.ExShaders;
 import Exploring.ui.AboutModDialog;
 import Exploring.ui.TodoListDialog;
 import arc.Core;
@@ -10,6 +9,7 @@ import arc.Events;
 import arc.util.Log;
 import mindustry.Vars;
 import mindustry.game.EventType;
+import mindustry.gen.EntityMapping;
 import mindustry.mod.Mod;
 import mindustry.mod.Mods;
 
@@ -52,6 +52,7 @@ public class ExploringMain extends Mod {
     public void init() {
         settings.defaults("developer-mode", false);
         settings.defaults("ex-show-about", true);
+        settings.defaults("ex-full-fx", true);
 
         BlackHoleRenderer.init();
 
@@ -67,7 +68,10 @@ public class ExploringMain extends Mod {
         MOD = Vars.mods.getMod(getClass());
 
         ExSettings.devEnv = settings.getBool("developer-mode", false);
+        ExSettings.fullFx = settings.getBool("ex-full-fx", false);
 
         ExContent.load();
+
+        settings.put("ex-full-fx", false);
     }
 }

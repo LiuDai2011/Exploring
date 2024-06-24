@@ -17,19 +17,19 @@ public class ExShaders {
     public static void load() {
         dynamicBarShader = new ModSurfaceShader("dyn-bar-vert", "dyn-bar-frag") {
             @Override
-            public String textureName(){
+            public String textureName() {
                 return "noise";
             }
 
             @Override
-            public void loadNoise(){
+            public void loadNoise() {
                 super.loadNoise();
 
                 noiseTex = ExTex.dynBarNoise;
             }
 
             @Override
-            public Texture getTexture(){
+            public Texture getTexture() {
                 return ExTex.dynBarNoise;
             }
         };
@@ -55,20 +55,20 @@ public class ExShaders {
     public static class ModSurfaceShader extends ModShader {
         Texture noiseTex;
 
-        public ModSurfaceShader(String vert, String frag){
+        public ModSurfaceShader(String vert, String frag) {
             super(vert, frag);
             loadNoise();
         }
 
-        public String textureName(){
+        public String textureName() {
             return "noise";
         }
 
-        public Texture getTexture(){
+        public Texture getTexture() {
             return null;
         }
 
-        public void loadNoise(){
+        public void loadNoise() {
             Core.assets.load("sprites/" + textureName() + ".png", Texture.class).loaded = t -> {
                 t.setFilter(Texture.TextureFilter.linear);
                 t.setWrap(Texture.TextureWrap.repeat);
@@ -76,13 +76,13 @@ public class ExShaders {
         }
 
         @Override
-        public void apply(){
+        public void apply() {
             setUniformf("u_campos", Core.camera.position.x - Core.camera.width / 2, Core.camera.position.y - Core.camera.height / 2);
             setUniformf("u_resolution", Core.camera.width, Core.camera.height);
             setUniformf("u_time", Time.time);
 
-            if(hasUniform("u_noise")){
-                if(noiseTex == null){
+            if (hasUniform("u_noise")) {
+                if (noiseTex == null) {
                     noiseTex = Core.assets.get("sprites/" + textureName() + ".png", Texture.class);
                 }
 

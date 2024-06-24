@@ -7,7 +7,7 @@ import static Exploring.ExploringMain.toText;
 import static mindustry.Vars.ui;
 
 public class ExSettings {
-    public static boolean devEnv = false;
+    public static boolean devEnv = false, fullFx = false;
 
     public static BaseDialog tip;
 
