@@ -1,7 +1,6 @@
 package Exploring.ui;
 
 import Exploring.TodoList;
-import arc.graphics.Color;
 import mindustry.ui.dialogs.BaseDialog;
 
 public class TodoListDialog extends BaseDialog {

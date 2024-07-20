@@ -5,13 +5,15 @@ displayName: "Exploring"
 name: "exploring"
 
 #name
-author: "[#ceeaf4]LiuDai"
+#in bundles!!!
+author: "LiuDai"
 
 #the fully qualified main class of the mod
 main: "Exploring.ExploringMain"
 
 #the mod description as seen in the mod dialog
-description: "This mod is remaking..."
+#in bundles!!!
+description: "IN BUNDLES!!!"
 
 #the mod version
 version: 0.0.0-alpha

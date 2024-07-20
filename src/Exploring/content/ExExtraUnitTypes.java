@@ -1,9 +1,9 @@
 package Exploring.content;
 
-import Exploring.graphics.ExPal;
-import Exploring.world.entities.abilities.NonurgentRepairAbility;
+import Exploring.ExploringMain;
+import Exploring.graphics.ExColor;
+import Exploring.world.entities.abilities.MultimodalRepairAbility;
 import Exploring.world.entities.abilities.SelfbombAbility;
-import Exploring.world.entities.abilities.UrgentRepairAbility;
 import Exploring.world.entities.bullets.BlackHoleBulletType;
 import Exploring.world.entities.units.ReignXEntity;
 import Exploring.world.meta.ExStatValues;
@@ -35,9 +35,17 @@ import mindustry.world.meta.StatUnit;
 public class ExExtraUnitTypes {
     public static UnitType daggerX, maceX, fortressX, scepterX, reignX;
 
+    static {
+        EntityMapping.nameMap.put(ExploringMain.name("dagger-x"), MechUnit::create);
+        EntityMapping.nameMap.put(ExploringMain.name("mace-x"), MechUnit::create);
+        EntityMapping.nameMap.put(ExploringMain.name("fortress-x"), MechUnit::create);
+        EntityMapping.nameMap.put(ExploringMain.name("scepter-x"), MechUnit::create);
+        EntityMapping.nameMap.put(ExploringMain.name("reign-x"), ReignXEntity::new);
+    }
+
     public static void load() {
         daggerX = new UnitType("dagger-x") {{
-            constructor = UnitEntity::create;
+            constructor = EntityMapping.idMap[4];
 
             speed = 0.6f;
             hitSize = 8f;
@@ -49,13 +57,15 @@ public class ExExtraUnitTypes {
                 top = false;
                 ejectEffect = Fx.casing1;
                 bullet = ExBulletTypes.smallEnergyShell;
+                bullet.status = ExStatusEffects.abyss;
+                bullet.statusDuration = 60f;
             }});
 
             abilities.add(new ForceFieldAbility(20f, 0.1f, 50f, 60f * 1));
         }};
 
         maceX = new UnitType("mace-x") {{
-            constructor = UnitEntity::create;
+            constructor = EntityMapping.idMap[4];
 
             speed = 0.7f;
             hitSize = 10f;
@@ -96,7 +106,7 @@ public class ExExtraUnitTypes {
         }};
 
         fortressX = new UnitType("fortress-x") {{
-            constructor = UnitEntity::create;
+            constructor = EntityMapping.idMap[4];
 
             speed = 0.53f;
             hitSize = 13f;
@@ -129,7 +139,7 @@ public class ExExtraUnitTypes {
                             width = 25f;
                             length = 40f;
                             shootEffect = Fx.shockwave;
-                            colors = new Color[]{ExPal.lightBlue, ExPal.lightBlue.cpy().lerp(Color.white, 0.5f), Color.white};
+                            colors = new Color[]{ExColor.lightBlue, ExColor.lightBlue.cpy().lerp(Color.white, 0.5f), Color.white};
                             pierce = true;
                             pierceBuilding = true;
                         }};
@@ -162,7 +172,7 @@ public class ExExtraUnitTypes {
         }};
 
         scepterX = new UnitType("scepter-x") {{
-            constructor = UnitEntity::create;
+            constructor = EntityMapping.idMap[4];
 
             speed = 0.4f;
             hitSize = 22f;
@@ -204,7 +214,7 @@ public class ExExtraUnitTypes {
                                     splashDamage = 20;
                                     splashDamageRadius = 15f;
 
-                                    trailColor = ExPal.lightBlue;
+                                    trailColor = ExColor.lightBlue;
                                     trailLength = 15;
 
                                     despawnEffect = healEffect = Fx.none;
@@ -270,7 +280,7 @@ public class ExExtraUnitTypes {
             {
                 constructor = ReignXEntity::new;
 
-                speed = 0.4f;
+                speed = 0.6f;
                 hitSize = 26f;
                 rotateSpeed = 1.65f;
                 health = 53000;
@@ -328,11 +338,10 @@ public class ExExtraUnitTypes {
                 );
 
                 abilities.add(new Ability[]{
-                        new ForceFieldAbility(64, 2000, 15000, 60f),
+                        new ForceFieldAbility(64, 200, 15000, 60f),
                         new RepairFieldAbility(1000, 30f, 32),
                         new ShieldRegenFieldAbility(1000, 20000, 60f * 2, 64),
-                        new UrgentRepairAbility(),
-                        new NonurgentRepairAbility(),
+                        new MultimodalRepairAbility(),
                         new SelfbombAbility(ReignXEntity.destroyMulti, ReignXEntity.destroyRad)
                 });
             }
@@ -345,7 +354,7 @@ public class ExExtraUnitTypes {
                     bars.defaults().growX().height(20f).pad(4);
                     bars.add(new Bar(
                             () -> Core.bundle.get("bar.reign-x-urgent-timer"),
-                            () -> unitR.cooldown ? Color.white : ExPal.lightBlue,
+                            () -> unitR.cooldown ? Color.white : ExColor.lightBlue,
                             () -> unitR.urgentTimer / ReignXEntity.timerMax
                     ));
                     bars.row();

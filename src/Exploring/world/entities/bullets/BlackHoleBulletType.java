@@ -2,8 +2,8 @@ package Exploring.world.entities.bullets;
 
 import Exploring.ExSettings;
 import Exploring.content.ExFx;
-import Exploring.graphics.BlackHoleRenderer;
-import Exploring.graphics.ExPal;
+import Exploring.graphics.ExColor;
+import Exploring.graphics.ExRenderer;
 import arc.Core;
 import arc.graphics.Color;
 import arc.math.Interp;
@@ -25,7 +25,7 @@ public class BlackHoleBulletType extends BulletType {
     public float impulse = 6.67f * 1e-1f;
 
     public boolean acc = false;
-    public Color accColor = ExPal.lightBlue;
+    public Color accColor = ExColor.lightBlue;
     public int amount = 2;
 
     public float blackHoleDamage = 0f, blackHoleDamageRadius = 0f;
@@ -44,7 +44,7 @@ public class BlackHoleBulletType extends BulletType {
                 (b.lifetime - b.time) / 72f;
         in = Interp.fastSlow.apply(in);
 
-//        BlackHoleRenderer.addBlackHole(b.x, b.y, inRad * in, outRad * in, Math.min(1, in + 0.1f), true);
+        ExRenderer.addBlackHole(b.x, b.y, inRad * in, outRad * in, Math.min(1, in + 0.1f), true);
 
         if (!Vars.headless && acc && (Core.settings != null && ExSettings.fullFx && b.time <= b.lifetime - 72))
             for (int i = 0; i < amount; i++) {
@@ -57,7 +57,7 @@ public class BlackHoleBulletType extends BulletType {
                 data.length = data.speed < midSpeed ? Mathf.random(midLength, maxLength) : Mathf.random(minLength, midLength);
                 data.owner = b;
                 if (i % 2 == 0) data.out = true;
-                ExFx.AccretionDiskEffect.at(
+                ExFx.accretionDiskEffect.at(
                         b.x,
                         b.y,
                         0, accColor, data);

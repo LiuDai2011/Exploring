@@ -5,10 +5,10 @@ import arc.func.Cons;
 import arc.graphics.Texture;
 
 public class ExTex {
-    public static Texture dynBarNoise;
+    public static Texture abyssFloorNoise;
 
     public static void load() {
-        dynBarNoise = loadTex("dyn-bar-noise", t -> {
+        abyssFloorNoise = loadTex("dyn-bar-noise", t -> {
             t.setFilter(Texture.TextureFilter.linear);
             t.setWrap(Texture.TextureWrap.repeat);
         });

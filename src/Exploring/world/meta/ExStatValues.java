@@ -1,6 +1,7 @@
 package Exploring.world.meta;
 
 import Exploring.world.entities.bullets.BlackHoleBulletType;
+import Exploring.world.entities.bullets.SingularityBulletType;
 import arc.Core;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
@@ -18,10 +19,25 @@ import mindustry.ui.Styles;
 import mindustry.world.blocks.defense.turrets.Turret;
 import mindustry.world.meta.StatUnit;
 import mindustry.world.meta.StatValue;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import static mindustry.Vars.tilesize;
 
 public class ExStatValues {
+    public static StatValue sNumber(String value, StatUnit unit, boolean merge){
+        return table -> {
+            String l1 = (unit.icon == null ? "" : unit.icon + " ") + value, l2 = (unit.space ? " " : "") + unit.localized();
+
+            if(merge){
+                table.add(l1 + l2).left();
+            }else{
+                table.add(l1).left();
+                table.add(l2).left();
+            }
+        };
+    }
+
     public static <T extends UnlockableContent> StatValue ammo(ObjectMap<T, BulletType> map) {
         return ammo(map, 0, false);
     }
@@ -32,7 +48,6 @@ public class ExStatValues {
 
     public static <T extends UnlockableContent> StatValue ammo(ObjectMap<T, BulletType> map, int indent, boolean showUnit) {
         return table -> {
-
             table.row();
 
             var orderedKeys = map.keys().toSeq();
@@ -78,6 +93,14 @@ public class ExStatValues {
 
                     if (type.splashDamage > 0) {
                         sep(bt, Core.bundle.format("bullet.splashdamage", (int) type.splashDamage, Strings.fixed(type.splashDamageRadius / tilesize, 1)));
+                    }
+
+                    if (type instanceof BlackHoleBulletType btype && btype.blackHoleDamage > 0) {
+                        sep(bt, Core.bundle.format(
+                                "bullet.black-hole-damage",
+                                Strings.fixed(btype.blackHoleDamage * 60f, 1),
+                                Strings.fixed(btype.blackHoleDamageRadius / tilesize, 1))
+                        );
                     }
 
                     if (!compact && !Mathf.equal(type.ammoMultiplier, 1f) && type.displayAmmoMultiplier && (!(t instanceof Turret turret) || turret.displayAmmoMultiplier)) {
@@ -148,163 +171,25 @@ public class ExStatValues {
                     }
 
                     if (type.fragBullet != null) {
-                        if (type.fragBullet instanceof BlackHoleBulletType bulletType) {
-                            bt.row();
+                        bt.row();
 
-                            Table fc = new Table();
-                            blackHoleAmmo(t, bulletType, indent + 1).display(fc);
-                            Collapser coll = new Collapser(fc, true);
-                            coll.setDuration(0.1f);
+                        Table fc = new Table();
+                        ammo(ObjectMap.of(t, type.fragBullet), indent + 1, false).display(fc);
+                        Collapser coll = new Collapser(fc, true);
+                        coll.setDuration(0.1f);
 
-                            bt.table(ft -> {
-                                ft.left().defaults().left();
+                        bt.table(ft -> {
+                            ft.left().defaults().left();
 
-                                ft.add(Core.bundle.format("bullet.frags", type.fragBullets));
-                                ft.button(Icon.downOpen, Styles.emptyi, () -> coll.toggle(false)).update(i -> i.getStyle().imageUp = (!coll.isCollapsed() ? Icon.upOpen : Icon.downOpen)).size(8).padLeft(16f).expandX();
-                            });
-                            bt.row();
-                            bt.add(coll);
-                        } else {
-                            bt.row();
-
-                            Table fc = new Table();
-                            ammo(ObjectMap.of(t, type.fragBullet), indent + 1, false).display(fc);
-                            Collapser coll = new Collapser(fc, true);
-                            coll.setDuration(0.1f);
-
-                            bt.table(ft -> {
-                                ft.left().defaults().left();
-
-                                ft.add(Core.bundle.format("bullet.frags", type.fragBullets));
-                                ft.button(Icon.downOpen, Styles.emptyi, () -> coll.toggle(false)).update(i -> i.getStyle().imageUp = (!coll.isCollapsed() ? Icon.upOpen : Icon.downOpen)).size(8).padLeft(16f).expandX();
-                            });
-                            bt.row();
-                            bt.add(coll);
-                        }
+                            ft.add(Core.bundle.format("bullet.frags", type.fragBullets));
+                            ft.button(Icon.downOpen, Styles.emptyi, () -> coll.toggle(false)).update(i -> i.getStyle().imageUp = (!coll.isCollapsed() ? Icon.upOpen : Icon.downOpen)).size(8).padLeft(16f).expandX();
+                        });
+                        bt.row();
+                        bt.add(coll);
                     }
                 }).padLeft(indent * 5).padTop(5).padBottom(compact ? 0 : 5).growX().margin(compact ? 0 : 10);
                 table.row();
             }
-        };
-    }
-
-    private static <T extends UnlockableContent> StatValue blackHoleAmmo(T t, BlackHoleBulletType type, int indent) {
-        return table -> {
-            table.row();
-            boolean compact = t instanceof UnitType || indent > 0;
-
-            if (type.spawnUnit != null && type.spawnUnit.weapons.size > 0) {
-                ammo(ObjectMap.of(t, type.spawnUnit.weapons.first().bullet), indent, false).display(table);
-                return;
-            }
-
-            table.table(Styles.grayPanel, bt -> {
-                bt.left().top().defaults().padRight(3).left();
-                if (!compact && !(t instanceof Turret)) {
-                    bt.table(title -> {
-                        title.image(icon(t)).size(3 * 8).padRight(4).right().scaling(Scaling.fit).top();
-                        title.add(t.localizedName).padRight(10).left().top();
-                    });
-                    bt.row();
-                }
-
-                if (type.damage > 0 && (type.collides || type.splashDamage <= 0)) {
-                    if (type.continuousDamage() > 0) {
-                        bt.add(Core.bundle.format("bullet.damage", type.continuousDamage()) + StatUnit.perSecond.localized());
-                    } else {
-                        bt.add(Core.bundle.format("bullet.damage", type.damage));
-                    }
-                }
-
-                if (type.buildingDamageMultiplier != 1) {
-                    int val = (int) (type.buildingDamageMultiplier * 100 - 100);
-                    sep(bt, Core.bundle.format("bullet.buildingdamage", ammoStat(val)));
-                }
-
-                if (type.rangeChange != 0 && !compact) {
-                    sep(bt, Core.bundle.format("bullet.range", ammoStat(type.rangeChange / tilesize)));
-                }
-
-                if (type.splashDamage > 0) {
-                    sep(bt, Core.bundle.format("bullet.splashdamage", (int) type.splashDamage, Strings.fixed(type.splashDamageRadius / tilesize, 1)));
-                }
-
-                if (type.blackHoleDamage > 0) {
-                    sep(bt, Core.bundle.format(
-                            "bullet.black-hole-damage",
-                            Strings.fixed(type.blackHoleDamage * 60f, 1),
-                            Strings.fixed(type.blackHoleDamageRadius / tilesize, 1))
-                    );
-                }
-
-                if (!compact && !Mathf.equal(type.ammoMultiplier, 1f) && type.displayAmmoMultiplier && (!(t instanceof Turret turret) || turret.displayAmmoMultiplier)) {
-                    sep(bt, Core.bundle.format("bullet.multiplier", (int) type.ammoMultiplier));
-                }
-
-                if (!compact && !Mathf.equal(type.reloadMultiplier, 1f)) {
-                    int val = (int) (type.reloadMultiplier * 100 - 100);
-                    sep(bt, Core.bundle.format("bullet.reload", ammoStat(val)));
-                }
-
-                if (type.knockback > 0) {
-                    sep(bt, Core.bundle.format("bullet.knockback", Strings.autoFixed(type.knockback, 2)));
-                }
-
-                if (type.healPercent > 0f) {
-                    sep(bt, Core.bundle.format("bullet.healpercent", Strings.autoFixed(type.healPercent, 2)));
-                }
-
-                if (type.healAmount > 0f) {
-                    sep(bt, Core.bundle.format("bullet.healamount", Strings.autoFixed(type.healAmount, 2)));
-                }
-
-                if (type.pierce || type.pierceCap != -1) {
-                    sep(bt, type.pierceCap == -1 ? "@bullet.infinitepierce" : Core.bundle.format("bullet.pierce", type.pierceCap));
-                }
-
-                if (type.incendAmount > 0) {
-                    sep(bt, "@bullet.incendiary");
-                }
-
-                if (type.homingPower > 0.01f) {
-                    sep(bt, "@bullet.homing");
-                }
-
-                if (type.lightning > 0) {
-                    sep(bt, Core.bundle.format("bullet.lightning", type.lightning, type.lightningDamage < 0 ? type.damage : type.lightningDamage));
-                }
-
-                if (type.pierceArmor) {
-                    sep(bt, "@bullet.armorpierce");
-                }
-
-                if (type.suppressionRange > 0) {
-                    sep(bt, Core.bundle.format("bullet.suppression", Strings.autoFixed(type.suppressionDuration / 60f, 2), Strings.fixed(type.suppressionRange / tilesize, 1)));
-                }
-
-                if (type.status != StatusEffects.none) {
-                    sep(bt, (type.status.minfo.mod == null ? type.status.emoji() : "") + "[stat]" + type.status.localizedName + (type.status.reactive ? "" : "[lightgray] ~ [stat]" + ((int) (type.statusDuration / 60f)) + "[lightgray] " + Core.bundle.get("unit.seconds")));
-                }
-
-                if (type.intervalBullet != null) {
-                    bt.row();
-
-                    Table ic = new Table();
-                    ammo(ObjectMap.of(t, type.intervalBullet), indent + 1, false).display(ic);
-                    Collapser coll = new Collapser(ic, true);
-                    coll.setDuration(0.1f);
-
-                    bt.table(it -> {
-                        it.left().defaults().left();
-
-                        it.add(Core.bundle.format("bullet.interval", Strings.autoFixed(type.intervalBullets / type.bulletInterval * 60, 2)));
-                        it.button(Icon.downOpen, Styles.emptyi, () -> coll.toggle(false)).update(i -> i.getStyle().imageUp = (!coll.isCollapsed() ? Icon.upOpen : Icon.downOpen)).size(8).padLeft(16f).expandX();
-                    });
-                    bt.row();
-                    bt.add(coll);
-                }
-            }).padLeft(indent * 5).padTop(5).padBottom(compact ? 0 : 5).growX().margin(compact ? 0 : 10);
-            table.row();
         };
     }
 

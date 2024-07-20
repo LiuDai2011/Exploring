@@ -2,18 +2,21 @@ package Exploring.world.blocks;
 
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
+import arc.graphics.g2d.Lines;
+import arc.math.Mathf;
 import arc.math.geom.Point2;
 import arc.scene.ui.layout.Table;
-import arc.util.Eachable;
 import arc.util.Nullable;
+import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.entities.TargetPriority;
-import mindustry.entities.units.BuildPlan;
 import mindustry.game.Team;
 import mindustry.gen.Building;
+import mindustry.graphics.Drawf;
+import mindustry.graphics.Pal;
 import mindustry.type.Item;
 import mindustry.world.Block;
 import mindustry.world.blocks.ItemSelection;
@@ -23,17 +26,10 @@ import mindustry.world.meta.Stat;
 import mindustry.world.meta.StatUnit;
 
 import static mindustry.Vars.content;
+import static mindustry.Vars.tilesize;
 
 public class MetaItemBridge extends Block {
-    public final int timerCheckMoved = timers++;
-    public int range;
-    public float transportTime = 2f;
-    public boolean fadeIn = true;
-    public boolean moveArrows = true;
-    public boolean pulse = false;
-    public float arrowSpacing = 4f, arrowOffset = 2f, arrowPeriod = 0.4f;
-    public float arrowTimeScl = 6.2f;
-    public float bridgeWidth = 6.5f;
+    public int range = 4;
     public float speed = 1f;
 
     public MetaItemBridge(String name) {
@@ -51,16 +47,22 @@ public class MetaItemBridge extends Block {
         itemCapacity = 10;
         unloadable = false;
         group = BlockGroup.transportation;
-        copyConfig = false;
+        copyConfig = true;
         allowConfigInventory = false;
         priority = TargetPriority.transport;
 
         config(Item.class, (MetaItemBridgeBuild tile, Item item) -> tile.sortItem = item);
-        configClear((MetaItemBridgeBuild tile) -> tile.sortItem = null);
         config(Point2.class, (MetaItemBridgeBuild tile, Point2 i) -> tile.link = Point2.pack(i.x + tile.tileX(), i.y + tile.tileY()));
-        config(Integer.class, (MetaItemBridgeBuild tile, Integer i) -> tile.link = i);
+        configClear((MetaItemBridgeBuild tile) -> {
+            tile.sortItem = null;
+            tile.link = -1;
+        });
 
         buildType = MetaItemBridgeBuild::new;
+    }
+
+    protected static boolean isValidBuilding(Building build, Team team) {
+        return build.block().hasItems && build.team == team;
     }
 
     @Override
@@ -70,15 +72,9 @@ public class MetaItemBridge extends Block {
     }
 
     @Override
-    public void drawPlanConfig(BuildPlan plan, Eachable<BuildPlan> list) {
-        super.drawPlanConfig(plan, list);
-        // TODO todo
-    }
-
-    @Override
-    public void setBars() {
-        super.setBars();
-        // TODO todo
+    public void drawPlace(int x, int y, int rotation, boolean valid) {
+        super.drawPlace(x, y, rotation, valid);
+        Drawf.circles(x, y, range * tilesize);
     }
 
     public class MetaItemBridgeBuild extends Building {
@@ -94,16 +90,14 @@ public class MetaItemBridge extends Block {
         }
 
         private boolean isPossibleItem(Item item) {
-            return getLinkingBuilding().canUnload() && getLinkingBuilding().items != null && getLinkingBuilding().items.has(item);
+            return link != -1 && getLinkingBuilding().canUnload() && getLinkingBuilding().items != null && getLinkingBuilding().items.has(item);
         }
 
         @Override
         public void updateTile() {
-            if (link == -1) {
-                link = Vars.state.teams.cores(Team.sharded).get(0).tile.pos();
-            }
             if (link != -1 && getLinkingBuilding() == null) link = -1;
-            if ((unloadTimer += delta()) < speed) return;
+            if ((unloadTimer += edelta() * efficiency) < speed) return;
+
             Item item = null;
             boolean any = false;
 
@@ -126,7 +120,7 @@ public class MetaItemBridge extends Block {
             if (item != null) {
                 rotations = item.id;
 
-                if (getLinkingBuilding() != null && items.total() < itemCapacity) {
+                if (link != -1 && items.total() < itemCapacity) {
                     handleItem(getLinkingBuilding(), item);
                     getLinkingBuilding().removeStack(item, 1);
                     any = true;
@@ -175,7 +169,36 @@ public class MetaItemBridge extends Block {
 
         @Override
         public boolean onConfigureBuildTapped(Building other) {
-            return super.onConfigureBuildTapped(other);
+            if (other == this) {
+                link = -1;
+                sortItem = null;
+                deselect();
+                return false;
+            }
+            if (Mathf.dst(other.x, other.y, x, y) <= range * tilesize && isValidBuilding(other, team)) {
+                link = Point2.pack(other.tileX(), other.tileY());
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public void drawConfigure() {
+            Drawf.circles(x, y, tile.block().size * tilesize / 2f + 1f + Mathf.absin(Time.time, 4f, 1f));
+            Drawf.circles(x, y, range * tilesize);
+            if (link != -1)
+                Drawf.square(getLinkingBuilding().x, getLinkingBuilding().y, getLinkingBuilding().block.size * tilesize / 2f + 1f, Pal.place);
+        }
+
+        @Override
+        public void drawSelect() {
+            super.drawSelect();
+
+            Lines.stroke(1f);
+
+            Draw.color(Pal.accent);
+            Drawf.circles(x, y, range * tilesize);
+            Draw.reset();
         }
     }
 }

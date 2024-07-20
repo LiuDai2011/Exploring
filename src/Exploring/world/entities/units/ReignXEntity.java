@@ -1,5 +1,6 @@
 package Exploring.world.entities.units;
 
+import Exploring.content.ExBulletTypes;
 import Exploring.world.entities.EntityRegister;
 import arc.math.Mathf;
 import arc.util.Time;
@@ -7,9 +8,9 @@ import arc.util.io.Reads;
 import arc.util.io.Writes;
 import mindustry.Vars;
 import mindustry.entities.Damage;
-import mindustry.gen.UnitEntity;
+import mindustry.gen.MechUnit;
 
-public class ReignXEntity extends UnitEntity {
+public class ReignXEntity extends MechUnit {
     public static final Float regen = 0.2f;
     public static final Float destroyRad = 128f;
     public static final Float destroyMulti = 4f;
@@ -52,11 +53,14 @@ public class ReignXEntity extends UnitEntity {
         if (amount > maxHealth * 0.1f) {
             kill();
         }
+        // 15% Health
+        if (health < maxHealth * 0.15f) tryUrgent();
     }
 
     @Override
     public void destroy() {
         if (!Vars.net.client()) Damage.damage(team, x, y, destroyRad, maxHealth * destroyMulti);
+        ExBulletTypes.reignXDead.create(this, team, x, y, 0, 1, 1);
         super.destroy();
     }
 
@@ -87,24 +91,32 @@ public class ReignXEntity extends UnitEntity {
     @Override
     public void read(Reads read) {
         urgent = read.bool();
+        cooldown = read.bool();
+        urgentTimer = read.f();
         super.read(read);
     }
 
     @Override
     public void write(Writes write) {
         write.bool(urgent);
+        write.bool(cooldown);
+        write.f(urgentTimer);
         super.write(write);
     }
 
     @Override
     public void readSync(Reads read) {
         urgent = read.bool();
+        cooldown = read.bool();
+        urgentTimer = read.f();
         super.readSync(read);
     }
 
     @Override
     public void writeSync(Writes write) {
         write.bool(urgent);
+        write.bool(cooldown);
+        write.f(urgentTimer);
         super.writeSync(write);
     }
 }

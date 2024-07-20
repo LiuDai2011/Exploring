@@ -24,10 +24,10 @@ float interp(float a){
     a = f * f * f * f * f + 1.0;
 
     //Interp.circle
-    if(a <= 0.5){
+    if (a <= 0.5){
         a *= 2.0;
         a = (1.0 - sqrt(1.0 - a * a)) / 2.0;
-    }else{
+    } else {
         --a;
         a *= 2.0;
         a = (sqrt(1.0 - a * a) + 1.0) / 2.0;
@@ -42,7 +42,7 @@ void main() {
     vec2 coords = (c * u_resolution) + u_campos;
 
     vec2 offset = vec2(0.0);
-    for(int i = 0; i < u_blackholecount; ++i){
+    for (int i = 0; i < u_blackholecount; ++i){
         vec4 blackhole = u_blackholes[i];
         float cX = blackhole.r;
         float cY = blackhole.g;
@@ -51,16 +51,16 @@ void main() {
 
         float dst = distance(blackhole.xy, coords);
 
-//        if(dst < iR * 1.5){
-//            //Inside black hole, set to black
-//            //up 1.5 times, make black area bigger
-//            gl_FragColor = vec4(0.0);
-//            return;
-//        }else
-        if(dst > oR){
+        //        if(dst < iR * 1.5){
+        //            //Inside black hole, set to black
+        //            //up 1.5 times, make black area bigger
+        //            gl_FragColor = vec4(0.0);
+        //            return;
+        //        }else
+        if (dst > oR){
             //Outside black hole, skip
             continue;
-        }else{
+        } else {
             //Influence target position
             float p = (dst - iR) / (oR - iR);
             p = interp(p);

@@ -1,6 +1,7 @@
 package Exploring.world.blocks.test;
 
-import Exploring.graphics.ExPal;
+import Exploring.graphics.ExColor;
+import Exploring.math.MathDef;
 import Exploring.math.Pair;
 import arc.graphics.Color;
 import arc.math.Mathf;
@@ -29,20 +30,20 @@ public class DPSWall extends Wall {
 
         removeBar("health");
         addBar("total-damage", (DPSBuild build) -> new Bar(
-                () -> "TD " + Mathf.floor(build.damageTotal / 10f) * 10f,
+                () -> "TD " + MathDef.exactlyRound(build.damageTotal, 10),
                 () -> Color.red,
                 () -> 1f
-        ));
+        ).blink(Color.white));
         addBar("dps", (DPSBuild build) -> new Bar(
-                () -> "DPS " + Mathf.floor(build.dps() / 10f) * 10f,
-                () -> ExPal.lightBlue,
+                () -> "DPS " + MathDef.exactlyRound(build.dps(), 10),
+                () -> ExColor.lightBlue,
                 () -> 1f
-        ));
+        ).blink(Color.white));
         addBar("length", (DPSBuild build) -> new Bar(
                 () -> "length " + build.seq.size,
-                () -> ExPal.lightBlue,
+                () -> ExColor.lightBlue,
                 () -> build.seq.size / 10000f
-        ));
+        ).blink(Color.white));
     }
 
     public class DPSBuild extends WallBuild {
@@ -60,16 +61,16 @@ public class DPSWall extends Wall {
         @Override
         public void update() {
             super.update();
-            while (seq.size > 1000 && !(Time.time - seq.get(0).getKey() > 60f)) seq.remove(0);
+            while (seq.size > 1000 && !(Time.time - seq.get(0).key() > 60f)) seq.remove(0);
             while (seq.size > 10000) seq.remove(0);
         }
 
         public float dps() {
             float tmp = 0f;
             for (var e : seq) {
-                tmp += e.getValue();
+                tmp += e.value();
             }
-            return tmp / (seq.size == 0 || Mathf.zero(Time.time - seq.get(0).getKey()) ? 1f : (Time.time - seq.get(0).getKey()) / 60f);
+            return tmp / (seq.size == 0 || Mathf.zero(Time.time - seq.get(0).key()) ? 1f : (Time.time - seq.get(0).key()) / 60f);
         }
     }
 }
