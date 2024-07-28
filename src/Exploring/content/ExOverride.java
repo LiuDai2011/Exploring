@@ -63,11 +63,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static Exploring.ExploringMain.err;
-import static Exploring.ExploringMain.info;
+import static Exploring.ExploringMain.*;
 import static Exploring.content.DefaultServerUrl.serverBe;
 import static Exploring.content.DefaultServerUrl.serverV7;
 import static mindustry.Vars.*;
@@ -93,61 +93,73 @@ public class ExOverride {
     }
 
     public static void overrideUI() {
-        String hex = Core.settings.getString("ex-orui-stylesbasecolor", "undefined");
-        if (hex.equals("undefined")) return;
-        Color color = Color.valueOf(hex);
-        Field[] fields = TextureRegionDrawable.class.getDeclaredFields();
-        for (Field field : fields) {
-            try {
-                if (!field.getName().equals("tint")) continue;
-                Log.info("tint: @", hex);
-                field.setAccessible(true);
-                ((Color) field.get(Styles.black)).set(color.cpy().a(1));
-                ((Color) field.get(Styles.black9)).set(color.cpy().a(0.9f));
-                ((Color) field.get(Styles.black8)).set(color.cpy().a(0.8f));
-                ((Color) field.get(Styles.black6)).set(color.cpy().a(0.6f));
-                ((Color) field.get(Styles.black5)).set(color.cpy().a(0.5f));
-                ((Color) field.get(Styles.black3)).set(color.cpy().a(0.3f));
-                ((Color) field.get(Styles.accentDrawable)).set(Pal.accent);
-                break;
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+        String hex;
+
+        hex = Core.settings.getString("ex-orui-accentcolor", "undefined");
+        if (!hex.equals("undefined")) {
+            Color color = Color.valueOf(hex);
+            Pal.accent.set(color);
+        }
+        hex = Core.settings.getString("ex-orui-stylesbasecolor", "undefined");
+        if (!hex.equals("undefined")) {
+            Color color = Color.valueOf(hex);
+            Field[] fields = TextureRegionDrawable.class.getDeclaredFields();
+            for (Field field : fields) {
+                try {
+                    if (!field.getName().equals("tint")) continue;
+                    info("tint: @", hex);
+                    field.setAccessible(true);
+                    ((Color) field.get(Styles.black)).set(color.cpy().a(1));
+                    ((Color) field.get(Styles.black9)).set(color.cpy().a(0.9f));
+                    ((Color) field.get(Styles.black8)).set(color.cpy().a(0.8f));
+                    ((Color) field.get(Styles.black6)).set(color.cpy().a(0.6f));
+                    ((Color) field.get(Styles.black5)).set(color.cpy().a(0.5f));
+                    ((Color) field.get(Styles.black3)).set(color.cpy().a(0.3f));
+                    ((Color) field.get(Styles.accentDrawable)).set(Pal.accent);
+                    break;
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
 
     public static void createUIOverrider() {
         if (mods.getMod(ExploringMain.MOD.meta.name + "-orui") != null) {
-            if (!mods.getMod(ExploringMain.MOD.meta.name + "-orui").enabled())
+            if (!mods.getMod(ExploringMain.MOD.meta.name + "-orui").enabled()) {
+                info("Turn on the Pack.");
                 mods.setEnabled(mods.getMod(ExploringMain.MOD.meta.name + "-orui"), true);
+            }
+            if (!Objects.equals(mods.getMod(ExploringMain.MOD.meta.name + "-orui").meta.version, ExploringMain.oruiPackVersion)) {
+                info("Del the Pack.");
+                mods.removeMod(mods.getMod(ExploringMain.MOD.meta.name + "-orui"));
+                ExSettings.tip().show();
+            }
             return;
         }
 
         String name = ExploringMain.MOD.meta.name + "-orui.zip";
+        if (modDirectory.child(name).exists()) modDirectory.child(name).delete();
         String temp = modDirectory.child("temp.png").path();
         File out = new File(modDirectory.child(name).path());
         Fi orui = ExploringMain.MOD.root.child("optional-override-sprites").child("ui");
         try {
+            info("Gen Pack...");
             ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(out));
             ZipEntry entry = new ZipEntry("mod.json");
             zipOutputStream.putNextEntry(entry);
             zipOutputStream.write((
                     "{ \"name\": \"" + ExploringMain.MOD.meta.name + "-orui" + "\", \"displayName\": \"" +
-                            Core.bundle.get("mod.exploring.orui-name") + "\", " +
+                            toText("mod.exploring.orui-name") + "\", " +
                             "\"author\": \"" + ExploringMain.MOD.meta.author + "\", " +
-                            "\"version\": \"" + 0 + "\", \"minGameVersion\": \"" + 146 +
-                            "\" }"
+                            "\"version\": \"" + ExploringMain.oruiPackVersion + "\", \"minGameVersion\": \"" + 146 +
+                            "\", \"description\": \"" + toText("mod.exploring.orui-description") + "\" }"
             ).getBytes());
             zipOutputStream.closeEntry();
 
             entry = new ZipEntry("scripts/main.js");
             zipOutputStream.putNextEntry(entry);
-            zipOutputStream.write("""
-                    Core.settings.put("ex-orui-stylesbasecolor", "8cb4c3");
-                    Events.on(EventType.ClientLoadEvent, () => {
-                        Pal.accent = Color.valueOf("ceeaf4");
-                    })
-                    """.getBytes());
+            zipOutputStream.write(ExploringMain.MOD.root.child("orui-scripts").child("main.js").readBytes());
             zipOutputStream.closeEntry();
 
             Fi[] all = orui.list();
@@ -173,7 +185,7 @@ public class ExOverride {
 
             Events.on(EventType.ClientLoadEvent.class, e -> {
                 Core.settings.put("mod-" + ExploringMain.MOD.meta.name + "-orui-enabled", true);
-                ExSettings.tip.show();
+                ExSettings.tip().show();
             });
         } catch (IOException e) {
 //            throw new RuntimeException(e);

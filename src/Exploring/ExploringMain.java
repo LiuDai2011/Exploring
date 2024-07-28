@@ -30,12 +30,13 @@ public class ExploringMain extends Mod {
     public static final String MOD_GITHUB_URL = "https://github.com/LiuDai2011/Exploring.git";
 
     public static Mods.LoadedMod MOD;
+    public static final String oruiPackVersion = "4728 r1"; // TODO
 
     public ExploringMain() {
         info("run 'public ExploringMain()'");
 
-//        Log.level = Log.LogLevel.debug;
-//        info("Log level set to debug.");
+        Log.level = Log.LogLevel.debug;
+        info("Log level set to debug.");
 
         Events.on(EventType.ClientLoadEvent.class, e -> {
             if (settings.getBool("ex-show-about", true))
