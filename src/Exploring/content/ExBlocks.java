@@ -5,21 +5,35 @@ import Exploring.graphics.ExCacheLayer;
 import Exploring.world.blocks.MetaItemBridge;
 import Exploring.world.blocks.test.AbyssCore;
 import Exploring.world.blocks.test.DPSWall;
+import arc.Core;
+import arc.func.Cons;
 import arc.graphics.Color;
+import arc.graphics.g2d.Draw;
+import arc.graphics.g2d.Lines;
+import arc.math.geom.Geometry;
+import arc.math.geom.Point2;
+import arc.struct.Seq;
+import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.content.Items;
+import mindustry.game.Team;
+import mindustry.gen.Building;
 import mindustry.gen.Sounds;
+import mindustry.graphics.Pal;
 import mindustry.type.Category;
 import mindustry.type.ItemStack;
 import mindustry.world.Block;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.production.GenericCrafter;
+import mindustry.world.blocks.storage.CoreBlock;
+import mindustry.world.blocks.storage.StorageBlock;
 import mindustry.world.draw.DrawDefault;
 import mindustry.world.draw.DrawFlame;
 import mindustry.world.draw.DrawMulti;
 import mindustry.world.meta.BlockGroup;
 import mindustry.world.meta.Env;
 
+import static mindustry.Vars.tilesize;
 import static mindustry.type.ItemStack.empty;
 import static mindustry.type.ItemStack.with;
 
@@ -29,6 +43,8 @@ public class ExBlocks {
     metaItemBridge,
 
     highSiliconSmelter,
+
+    coreLinker,
 
     test, dps1, dps2, dps3;
 
@@ -44,6 +60,63 @@ public class ExBlocks {
         }};
 
         if (!ExSettings.devEnv) return;
+
+        coreLinker = new StorageBlock("core-linker") {{
+            requirements(Category.effect, with(Items.titanium, 50, Items.thorium, 30, ExItems.basicItemInterface, 5));// TODO
+            size = 1;
+            itemCapacity = 0;
+            scaledHealth = 12;
+            update = true;
+
+            buildType = () -> new StorageBuild() {
+                @Override
+                public void created() {
+                    super.created();
+                    Core.app.post(() -> {
+                        ExGroups.checkCoreLinkerKey(team);
+                        ExGroups.coreLinkers.get(team).add(this);
+                    });
+                }
+
+                @Override
+                public void onRemoved() {
+                    super.onRemoved();
+                    ExGroups.coreLinkers.get(team).remove(this);
+                }
+
+                @Override
+                public void updateTile() {
+                    super.updateTile();
+                    if (linkedCore == null) {
+                        linkedCore = core();
+                    } else {
+                        items = linkedCore.items;
+                    }
+                }
+
+                @Override
+                public boolean canPickup() {
+                    return false;
+                }
+
+//                @Override
+//                public void drawSelect() {
+//                    super.drawSelect();
+//
+//                    Lines.stroke(1f, Pal.accent);
+//                    Cons<Building> outline = b -> {
+//                        for(int i = 0; i < 4; i++){
+//                            Point2 p = Geometry.d8edge[i];
+//                            float offset = -Math.max(b.block.size - 1, 0) / 2f * tilesize;
+//                            Draw.rect("block-select", b.x + offset * p.x, b.y + offset * p.y, i * 90);
+//                        }
+//                    };
+//
+//                    outline.get(this);
+//                    Draw.reset();
+//                }
+            };
+        }};
 
         abyssFloor = new Floor("abyss-floor") {{
             speedMultiplier = 0.5f;

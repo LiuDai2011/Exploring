@@ -1,13 +1,13 @@
 package Exploring;
 
 import Exploring.content.ExContent;
+import Exploring.content.ExOverride;
 import Exploring.content.ExTeam;
 import Exploring.graphics.ExColor;
 import Exploring.graphics.ExRenderer;
 import Exploring.math.MathDef;
 import Exploring.ui.AboutModDialog;
 import Exploring.ui.ExContentInfoDialog;
-import Exploring.ui.TestDialog;
 import Exploring.ui.TodoListDialog;
 import arc.Core;
 import arc.Events;
@@ -17,9 +17,9 @@ import mindustry.game.EventType;
 import mindustry.mod.Mod;
 import mindustry.mod.Mods;
 
-import static Exploring.content.ExOverride.removeImmunities;
 import static arc.Core.bundle;
 import static arc.Core.settings;
+import static mindustry.Vars.mods;
 import static mindustry.Vars.ui;
 
 public class ExploringMain extends Mod {
@@ -38,12 +38,10 @@ public class ExploringMain extends Mod {
 //        info("Log level set to debug.");
 
         Events.on(EventType.ClientLoadEvent.class, e -> {
-            removeImmunities();
             if (settings.getBool("ex-show-about", true))
                 new AboutModDialog().show();
             if (settings.getBool("developer-mode", false))
                 new TodoListDialog().show();
-            new TestDialog().show();
         });
         Events.on(EventType.WorldLoadEvent.class, e -> {
             Vars.state.teams.get(ExTeam.abyss).unitCap = Integer.MAX_VALUE;
@@ -85,6 +83,8 @@ public class ExploringMain extends Mod {
         settings.defaults("ex-full-fx", true);
         settings.defaults("ex-override", false);
         settings.defaults("ex-override-server", false);
+        settings.defaults("ex-override-ui", false);
+        settings.defaults("ex-tip-auto-accept", false);
 
         ExRenderer.init();
 
@@ -110,6 +110,14 @@ public class ExploringMain extends Mod {
         ExSettings.fullFx = settings.getBool("ex-full-fx", false);
         ExSettings.overrideDeveloper = settings.getBool("ex-override-developer", false);
         ExSettings.overrideServer = settings.getBool("ex-override-server", false);
+        ExSettings.overrideUI = settings.getBool("ex-override-ui", false);
+        ExSettings.autoAccept = settings.getBool("ex-tip-auto-accept", false);
+        if (ExSettings.overrideUI &&
+                (mods.getMod(ExploringMain.MOD.meta.name + "-orui") == null ||
+                        !mods.getMod(ExploringMain.MOD.meta.name + "-orui").enabled())) {
+            ExSettings.overrideUI = false;
+            ExOverride.createUIOverrider();
+        }
 
         ExSettings.overrideTag = "\n[#" + ExColor.author.toString() + "]Override by Exploring mod.[]";
 

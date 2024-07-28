@@ -2,20 +2,32 @@ package Exploring;
 
 import Exploring.content.ExOverride;
 import arc.Core;
+import arc.scene.ui.Dialog;
 import mindustry.ui.dialogs.BaseDialog;
 
 import static Exploring.ExploringMain.toText;
 import static mindustry.Vars.ui;
 
 public class ExSettings {
-    public static boolean devEnv = false, fullFx = true, overrideDeveloper = false, overrideServer = false;
+    public static boolean devEnv = false,
+            fullFx = true,
+            overrideDeveloper = false,
+            overrideServer = false,
+            overrideUI = false,
+            autoAccept = false;
     public static String overrideTag = "";
 
     public static BaseDialog tip;
 
     public static void loadUI() {
         if (ui.settings != null) {
-            tip = new BaseDialog("@ex-tip");
+            tip = new BaseDialog("@ex-tip") {
+                @Override
+                public Dialog show() {
+                    if (ExSettings.autoAccept) Core.app.exit();
+                    return super.show();
+                }
+            };
             Runnable exit = () -> {
                 tip.hide();
                 Core.app.exit();
@@ -28,14 +40,22 @@ public class ExSettings {
                     tip.show();
                 });
                 settingsTable.checkPref("ex-show-about", true);
+                settingsTable.checkPref("ex-tip-auto-accept", false, b -> autoAccept = b);
                 settingsTable.checkPref("ex-override-server", false, b -> {
                     if (b) ExOverride.loadServers();
                     else tip.show();
+                    overrideServer = b;
                 });
                 if (!devEnv) return;
                 settingsTable.checkPref("ex-override-developer", false, b -> {
                     if (b) ExOverride.overrideDeveloper();
                     else tip.show();
+                    overrideDeveloper = b;
+                });
+                settingsTable.checkPref("ex-override-ui", false, b -> {
+                    if (b) Core.settings.put("mod-" + ExploringMain.MOD.meta.name + "-orui-enabled", true);
+                    else Core.settings.put("mod-" + ExploringMain.MOD.meta.name + "-orui-enabled", false);
+                    tip.show();
                 });
 //                ExStatValues.ammo(ObjectMap.of(ExExtraUnitTypes.daggerX, ((ItemTurret) Blocks.cyclone).ammoTypes.get(Items.plastanium))).display(settingsTable);
                 // TODO fx

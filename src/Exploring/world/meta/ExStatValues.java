@@ -1,7 +1,6 @@
 package Exploring.world.meta;
 
 import Exploring.world.entities.bullets.BlackHoleBulletType;
-import Exploring.world.entities.bullets.SingularityBulletType;
 import arc.Core;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
@@ -19,19 +18,17 @@ import mindustry.ui.Styles;
 import mindustry.world.blocks.defense.turrets.Turret;
 import mindustry.world.meta.StatUnit;
 import mindustry.world.meta.StatValue;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 import static mindustry.Vars.tilesize;
 
 public class ExStatValues {
-    public static StatValue sNumber(String value, StatUnit unit, boolean merge){
+    public static StatValue sNumber(String value, StatUnit unit, boolean merge) {
         return table -> {
             String l1 = (unit.icon == null ? "" : unit.icon + " ") + value, l2 = (unit.space ? " " : "") + unit.localized();
 
-            if(merge){
+            if (merge) {
                 table.add(l1 + l2).left();
-            }else{
+            } else {
                 table.add(l1).left();
                 table.add(l2).left();
             }

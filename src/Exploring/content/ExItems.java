@@ -17,7 +17,7 @@ public class ExItems {
 
     public static void load() {
         float interfCost = 0.005f,
-            unitCost = 0.003f;
+                unitCost = 0.003f;
 
         basicItemInterface = new ItemInterface("basic-item-interface", Color.valueOf("ffd37f")) {{
             cost = interfCost;

@@ -45,10 +45,10 @@ public class ExContentInfoDialog extends ContentInfoDialog {
 
         table.row();
 
-        if(content.description != null){
+        if (content.description != null) {
             var any = content.stats.toMap().size > 0;
 
-            if(any){
+            if (any) {
                 table.add("@category.purpose").color(Pal.accent).fillX().padTop(10);
                 table.row();
             }
@@ -56,7 +56,7 @@ public class ExContentInfoDialog extends ContentInfoDialog {
             table.add("[lightgray]" + content.displayDescription()).wrap().fillX().padLeft(any ? 10 : 0).width(500f).padTop(any ? 0 : 10).left();
             table.row();
 
-            if(!content.stats.useCategories && any){
+            if (!content.stats.useCategories && any) {
                 table.add("@category.general").fillX().color(Pal.accent);
                 table.row();
             }
@@ -64,22 +64,22 @@ public class ExContentInfoDialog extends ContentInfoDialog {
 
         Stats stats = content.stats;
 
-        for(StatCat cat : stats.toMap().keys()){
+        for (StatCat cat : stats.toMap().keys()) {
             OrderedMap<Stat, Seq<StatValue>> map = stats.toMap().get(cat);
 
-            if(map.size == 0) continue;
+            if (map.size == 0) continue;
 
-            if(stats.useCategories){
+            if (stats.useCategories) {
                 table.add("@category." + cat.name).color(Pal.accent).fillX();
                 table.row();
             }
 
-            for(Stat stat : map.keys()){
+            for (Stat stat : map.keys()) {
                 table.table(inset -> {
                     inset.left();
                     inset.add("[lightgray]" + stat.localized() + ":[] ").left().top();
                     Seq<StatValue> arr = map.get(stat);
-                    for(StatValue value : arr){
+                    for (StatValue value : arr) {
                         value.display(inset);
                         inset.add().size(10f);
                     }
@@ -89,7 +89,7 @@ public class ExContentInfoDialog extends ContentInfoDialog {
             }
         }
 
-        if(content.details != null){
+        if (content.details != null) {
             table.add("[gray]" + (content.unlocked() || !content.hideDetails ? content.details : Iconc.lock + " " + Core.bundle.get("unlock.incampaign"))).pad(6).padTop(20).width(400f).wrap().fillX();
             table.row();
         }

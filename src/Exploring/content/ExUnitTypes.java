@@ -5,7 +5,6 @@ import Exploring.graphics.ExColor;
 import Exploring.math.MathDef;
 import Exploring.world.entities.units.DPSUnit;
 import arc.graphics.Color;
-import arc.math.Mathf;
 import arc.scene.ui.layout.Table;
 import mindustry.ai.types.SuicideAI;
 import mindustry.content.Fx;

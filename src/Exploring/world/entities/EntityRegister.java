@@ -6,7 +6,6 @@ import Exploring.world.entities.units.ReignXEntity;
 import arc.func.Prov;
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
-import arc.util.Log;
 import mindustry.Vars;
 import mindustry.gen.EntityMapping;
 import mindustry.gen.Entityc;
